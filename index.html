@@ -68,12 +68,24 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
 @media(max-width:620px){.checkbox-grid{grid-template-columns:1fr}}
 
 </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6c5ce7">
+<meta name="application-name" content="CREATOR.CO Video Title Generator">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CREATOR.CO">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
 </head>
 <body>
 <div class="app">
 <header><div class="header-inner">
   <div class="brand"><h1>CREATOR.CO Video Title Generator</h1><p>Buat Judul Video dengan Topik Cluster Berbasis SEO</p></div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+  <button class="secondary" id="installAppBtn" style="display:none;padding:8px 12px">Install App</button>
   <div class="theme-select"><span>◐</span><select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
+</div>
 </div></header>
 
 <main>
@@ -1199,6 +1211,40 @@ function applyTheme(v){
  document.documentElement.setAttribute("data-theme",t);localStorage.setItem("creatorTheme",v)
 }
 $("theme").value=localStorage.getItem("creatorTheme")||"system";applyTheme($("theme").value);$("theme").onchange=e=>applyTheme(e.target.value);
+
+let deferredInstallPrompt=null;
+const installBtn=$("installAppBtn");
+
+window.addEventListener("beforeinstallprompt",(e)=>{
+ e.preventDefault();
+ deferredInstallPrompt=e;
+ if(installBtn) installBtn.style.display="inline-block";
+});
+
+if(installBtn){
+ installBtn.addEventListener("click",async()=>{
+   if(!deferredInstallPrompt){
+     showWarn("Install prompt is available only when the app is opened over HTTPS or localhost in a supported browser.");
+     return;
+   }
+   deferredInstallPrompt.prompt();
+   try{ await deferredInstallPrompt.userChoice; }catch(e){}
+   deferredInstallPrompt=null;
+   installBtn.style.display="none";
+ });
+}
+
+window.addEventListener("appinstalled",()=>{
+ deferredInstallPrompt=null;
+ if(installBtn) installBtn.style.display="none";
+});
+
+if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost" || location.hostname==="127.0.0.1")){
+ window.addEventListener("load",()=>{
+   navigator.serviceWorker.register("./sw.js").catch(err=>console.warn("Service worker registration failed:",err));
+ });
+}
+
 </script>
 </body>
 </html>
