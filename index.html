@@ -4,7 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CREATOR.CO Video Title Generator</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236c5ce7'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Arial,sans-serif' font-size='28' font-weight='700' fill='white'%3ECC%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+<link rel="shortcut icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+
 <style>
 :root{
   --bg:#f6f7fb;--panel:#ffffff;--panel2:#f0f2f7;--text:#151821;--muted:#687083;
@@ -69,13 +73,13 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
 
 </style>
 
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#6c5ce7">
 <meta name="application-name" content="CREATOR.CO Video Title Generator">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="CREATOR.CO">
-<link rel="apple-touch-icon" href="icons/new-icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 
 </head>
 <body>
@@ -83,7 +87,7 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
 <header><div class="header-inner">
   <div class="brand"><h1>CREATOR.CO Video Title Generator</h1><p>Buat Judul Video dengan Topik Cluster Berbasis SEO</p></div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-  <button class="secondary" id="installAppBtn" style="display:none;padding:8px 12px">Install App</button>
+  <button class="secondary" id="installAppBtn" style="display:inline-block;padding:8px 12px">Install App</button>
   <div class="theme-select"><span>◐</span><select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
 </div>
 </div></header>
@@ -1224,7 +1228,7 @@ window.addEventListener("beforeinstallprompt",(e)=>{
 if(installBtn){
  installBtn.addEventListener("click",async()=>{
    if(!deferredInstallPrompt){
-     showWarn("Install prompt is available only when the app is opened over HTTPS or localhost in a supported browser.");
+     showWarn("Install belum tersedia. Pastikan manifest.json, sw.js, dan icon PWA berhasil dimuat dari domain ini. Di iPhone/iPad gunakan Safari → Share → Add to Home Screen.");
      return;
    }
    deferredInstallPrompt.prompt();
@@ -1241,7 +1245,7 @@ window.addEventListener("appinstalled",()=>{
 
 if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost" || location.hostname==="127.0.0.1")){
  window.addEventListener("load",()=>{
-   navigator.serviceWorker.register("./sw.js").catch(err=>console.warn("Service worker registration failed:",err));
+   navigator.serviceWorker.register("/sw.js").catch(err=>console.warn("Service worker registration failed:",err));
  });
 }
 

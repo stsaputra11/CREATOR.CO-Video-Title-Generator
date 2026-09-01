@@ -1,0 +1,24 @@
+<!doctype html><meta charset="utf-8"><title>PWA Check</title>
+<style>body{font-family:system-ui;padding:24px;line-height:1.6}code{background:#eee;padding:2px 5px;border-radius:4px}</style>
+<h1>CREATOR.CO PWA Check</h1>
+<div id="out">Checking…</div>
+<script>
+(async()=>{
+ const tests=[
+  ["/manifest.json","Manifest"],
+  ["/sw.js","Service Worker"],
+  ["/icons/icon-192.png","192 icon"],
+  ["/icons/icon-512.png","512 icon"]
+ ];
+ let html="";
+ for(const [url,name] of tests){
+  try{
+   const r=await fetch(url,{cache:"no-store"});
+   html+=`<p>${r.ok?"✅":"❌"} <b>${name}</b>: <code>${url}</code> — HTTP ${r.status}</p>`;
+  }catch(e){html+=`<p>❌ <b>${name}</b>: ${e}</p>`}
+ }
+ html+=`<p>Protocol: <code>${location.protocol}</code></p>`;
+ html+=`<p>Service Worker support: <b>${"serviceWorker" in navigator?"Yes":"No"}</b></p>`;
+ document.getElementById("out").innerHTML=html;
+})();
+</script>
