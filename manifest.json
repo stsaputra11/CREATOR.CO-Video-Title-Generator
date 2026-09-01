@@ -1,0 +1,25 @@
+{
+  "name": "CREATOR.CO Video Title Generator",
+  "short_name": "CREATOR.CO",
+  "description": "Buat judul video SEO-friendly berbasis topic cluster, niche, related keywords, mood, dan atmosphere.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c0e13",
+  "theme_color": "#6c5ce7",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

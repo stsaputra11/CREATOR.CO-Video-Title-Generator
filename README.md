@@ -1,8 +1,20 @@
-# CREATOR.CO-Video-Title-Generator
-Buat Judul Video dengan Topik Cluster Berbasis SEO
+# CREATOR.CO Video Title Generator v15 PWA
 
-Memudahkan creator untuk membuat cluster topik content video, serta menghasilkan title video, meta tag keywords dan hashtag untuk video Youtube, yang dapat di-export dalam bentuk content plan dengan format .xlsx. 
+PWA features:
+- Installable on desktop and supported phones
+- Standalone app window
+- Offline caching via Service Worker
+- App manifest
+- CC icons (192x192 and 512x512)
+- In-app Install App button when browser exposes the install prompt
 
-Clustering dan title generator ini menggunakan engine AI yang kadang masih memiliki keterbatasan dalam beberapa hal, sehingga masih dibutuhkan peran manusia untuk memoles hasil akhirnya.
+Important:
+PWA installation does NOT work when opening `index.html` directly with `file://`.
+Serve the folder via HTTPS, or use localhost.
 
-Mohon gunakan aplikasi ini dengan bijak.
+Quick local test:
+`python -m http.server 8080`
+Then open:
+`http://localhost:8080`
+
+For normal use, deploy the folder to an HTTPS host such as GitHub Pages, Netlify, Vercel, Cloudflare Pages, or your own web server.
