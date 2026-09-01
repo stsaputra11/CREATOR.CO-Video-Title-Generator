@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CREATOR.CO Video Title Generator</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236c5ce7'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Arial,sans-serif' font-size='28' font-weight='700' fill='white'%3ECC%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f6f7fb;--panel:#ffffff;--panel2:#f0f2f7;--text:#151821;--muted:#687083;
+  --border:#dfe3ea;--accent:#6c5ce7;--accent2:#8e7dff;--good:#15a36d;--warn:#d99100;
+  --shadow:0 16px 40px rgba(20,25,45,.08)
+}
+html[data-theme="dark"]{
+  --bg:#0c0e13;--panel:#14171f;--panel2:#1b1f29;--text:#f4f6fb;--muted:#9ca5b8;
+  --border:#2b3140;--accent:#8c7cff;--accent2:#a89cff;--good:#3dd598;--warn:#ffbf47;
+  --shadow:0 18px 44px rgba(0,0,0,.3)
+}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+.app{min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1440px;margin:auto;padding:18px 24px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+.brand h1{font-size:22px;margin:0}.brand p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.theme-select{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);padding:7px 10px;border-radius:12px}
+.theme-select select{background:transparent;border:0;color:var(--text);outline:0}
+main{max-width:1440px;margin:auto;padding:24px;display:grid;grid-template-columns:minmax(320px,430px) 1fr;gap:22px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}
+.form-card{padding:20px;position:sticky;top:96px;align-self:start}
+.section-title{margin:0 0 5px;font-size:17px}.section-sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+.field{margin-bottom:16px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:7px}
+.field small{display:block;color:var(--muted);margin-top:6px;line-height:1.45}
+.field input,.field select{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px 13px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+button{border:0;border-radius:12px;padding:11px 14px;cursor:pointer;font-weight:700}
+.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;grid-column:1/-1}
+.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+.danger{background:transparent;color:var(--muted);border:1px dashed var(--border)}
+.results{display:flex;flex-direction:column;gap:18px}
+.placeholder{padding:52px 24px;text-align:center}.placeholder .icon{font-size:44px}.placeholder h2{margin:12px 0 8px}.placeholder p{color:var(--muted);max-width:560px;margin:0 auto;line-height:1.6}
+.result-card{padding:20px}.row-between{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.kicker{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent2);font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chip{background:var(--panel2);border:1px solid var(--border);border-radius:999px;padding:8px 10px;font-size:12px}
+.keyword-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.keyword{background:var(--panel2);border:1px solid var(--border);padding:12px;border-radius:13px}
+.keyword b{display:block;font-size:13px}.potential{margin-top:7px;font-size:11px;color:var(--muted)}.potential.high{color:var(--good)}
+.atmo-list{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.atmo{background:var(--panel2);border-radius:12px;padding:11px 12px;font-size:13px;border:1px solid var(--border)}
+.recommended{border:1px solid color-mix(in srgb,var(--accent) 65%,var(--border));background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 9%,var(--panel)),var(--panel))}
+.badge{display:inline-block;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent2);padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800}
+.title-text{font-size:22px;line-height:1.4;margin:14px 0}.metrics{display:flex;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:12px}
+.metric{background:var(--panel2);border:1px solid var(--border);padding:7px 9px;border-radius:999px}
+.copy{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px 10px;font-size:12px}
+.title-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}.title-item{border:1px solid var(--border);background:var(--panel2);border-radius:14px;padding:13px}
+.title-item p{margin:0 0 10px;line-height:1.5}.title-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.codebox{margin-top:12px;background:var(--panel2);border:1px solid var(--border);border-radius:13px;padding:13px;line-height:1.6;word-break:break-word;font-size:13px}
+.warnbox{display:none;background:color-mix(in srgb,var(--warn) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--warn) 45%,var(--border));padding:12px;border-radius:12px;color:var(--text);font-size:13px;margin-bottom:15px}
+.loading{display:none;padding:36px;text-align:center}.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}@keyframes spin{to{transform:rotate(360deg)}}
+footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:980px){main{grid-template-columns:1fr}.form-card{position:static}.keyword-list{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.header-inner{padding:15px}.brand p{display:none}main{padding:15px}.keyword-list,.atmo-list{grid-template-columns:1fr}.title-text{font-size:18px}.actions{grid-template-columns:1fr}.secondary,.danger,.primary{grid-column:1}}
+
+.checkbox-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:320px;overflow:auto;padding:4px}
+.check-item{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:9px 10px;font-size:12px;cursor:pointer}
+.check-item input{width:auto;margin:0;accent-color:var(--accent)}
+.check-item span{line-height:1.25}
+.check-note{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px;margin-top:7px}
+@media(max-width:620px){.checkbox-grid{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="header-inner">
+  <div class="brand"><h1>CREATOR.CO Video Title Generator</h1><p>Buat Judul Video dengan Topik Cluster Berbasis SEO</p></div>
+  <div class="theme-select"><span>◐</span><select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
+</div></header>
+
+<main>
+  <aside class="card form-card">
+    <h2 class="section-title">Video SEO Input</h2>
+    <p class="section-sub">Masukkan fondasi topik untuk membuat keyword cluster dan judul video.</p>
+    <div id="warning" class="warnbox"></div>
+    <div class="field"><label>Cluster *</label><input id="cluster" placeholder="Example: Tokyo Rain Lofi"><small>Topik utama untuk mengelompokkan konten dalam satu SEO cluster.</small></div>
+    <div class="field"><label>Main Keyword *</label><input id="mainKeyword" placeholder="Example: Tokyo Rain Lofi"><small>Keyword utama yang ingin ditargetkan.</small></div>
+    <div class="field"><label>Niche *</label><select id="niche">
+      <option value="">Select Niche</option>
+      <option>Lofi</option>
+      <option>Jazz / Bossa Nova</option>
+      <option>Dark Piano / Dark Academia</option>
+      <option>Guitar / Acoustic</option>
+      <option>Piano</option>
+      <option>Baby Lullaby / Gentle Lullaby / Music Box</option>
+      <option>Tibetan Flute</option>
+      <option>Deep House / Techno EDM / Techno Melodic</option>
+    </select></div>
+    <div class="field"><label>Use Case *</label><select id="useCase"><option value="">Select Use Case</option><option>Study</option><option>Focus</option><option>Work</option><option>Relax</option><option>Sleep</option></select></div>
+    <div class="field">
+      <label>Atmosphere / Vibes * <span style="font-weight:500;color:var(--muted)">(pilih 3–5)</span></label>
+      <div class="checkbox-grid" id="atmoOptions"><label class="check-item"><input type="checkbox" class="atmo-option" value="window"><span>window</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="rooftop"><span>rooftop</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="balcony"><span>balcony</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="room"><span>room</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="cabin"><span>cabin</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="lounge"><span>lounge</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="cafe"><span>cafe</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="bar"><span>bar</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="coffee shop"><span>coffee shop</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="office"><span>office</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="apartments"><span>apartments</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="bedroom"><span>bedroom</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="living room"><span>living room</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="city"><span>city</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="street"><span>street</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="nature"><span>nature</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="forest"><span>forest</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="river"><span>river</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="water sound"><span>water sound</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="water flow"><span>water flow</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="bamboo water fountain"><span>bamboo water fountain</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="bamboo water flowing"><span>bamboo water flowing</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="mountain"><span>mountain</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="lakeside"><span>lakeside</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="seaside"><span>seaside</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="ocean"><span>ocean</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="night"><span>night</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="early morning"><span>early morning</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="morning"><span>morning</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="golden hour"><span>golden hour</span></label><label class="check-item"><input type="checkbox" class="atmo-option" value="evening"><span>evening</span></label></div>
+      <div class="check-note"><span>Minimum 3 pilihan</span><span id="atmoCount">0 / 5 selected</span></div>
+      <small>AI akan mengembangkan setiap pilihan Atmosphere / Vibes secara terpisah menjadi frasa yang berbeda, lalu menyesuaikannya dengan Main Keyword dan Related Keywords.</small>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="generate">Generate SEO Titles</button>
+      <button class="secondary" id="regenKeywords">Regenerate Keywords</button>
+      <button class="secondary" id="regenAtmosphere">Regenerate Atmosphere</button>
+      <button class="secondary" id="regenTitles">Regenerate Titles</button>
+      <button class="secondary" id="regenAll">Regenerate All</button>
+      <button class="secondary" id="exportSpreadsheet">Export Spreadsheet</button>
+      <button class="danger" id="reset">Reset</button>
+    </div>
+  </aside>
+
+  <section class="results">
+    <div class="card placeholder" id="placeholder"><div class="icon">✦</div><h2>Ready to generate</h2><p>Isi form di sebelah kiri. AI engine akan membuat related keywords, mood/scenario, emotional phrases, dan atmosphere hooks berdasarkan 3–5 konteks Atmosphere / Vibes yang Anda pilih.</p></div>
+    <div class="card loading" id="loading"><div class="spinner"></div><b id="loadingText">Analyzing SEO Keywords...</b></div>
+    <div id="output" style="display:none"></div>
+  </section>
+</main>
+<footer>Created by santtanu</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let state={keywords:[],moods:[],atmos:[],emotions:[],titles:[]};
+
+const presets={
+  lofi:["rainy {x}","{x} ambience","{x} study music","relaxing {x}","{x} night vibes","cozy {x}","{x} beats","{x} background music","chill {x}"],
+  jazz:["{x} jazz ambience","relaxing {x} jazz","{x} cafe jazz","smooth {x}","{x} night jazz","cozy {x} jazz","{x} background jazz","soft {x} jazz","calm {x} music"],
+  piano:["{x} piano music","relaxing {x} piano","peaceful {x} melody","{x} study piano","soft {x} piano","calm {x} music","{x} background piano","emotional {x} piano","gentle {x} melody"],
+  sleep:["{x} sleep music","calming {x}","gentle {x}","soothing {x}","{x} bedtime music","peaceful {x}","relaxing {x}","soft {x} melody","{x} deep sleep"],
+  edm:["{x} mix","{x} electronic music","melodic {x}","{x} night drive","energetic {x}","{x} focus mix","atmospheric {x}","{x} playlist","deep {x}"]
+};
+const atmoTemplates=[
+ "soft {core} and distant city lights","quiet {core} beneath a glowing skyline","gentle {core} around a peaceful room",
+ "warm ambience with soft evening lights","calm night air and distant urban sounds","cozy window ambience above the city",
+ "muted lights and a slow peaceful atmosphere","quiet streets wrapped in soft ambient light","deep nighttime calm with distant sounds",
+ "a peaceful escape into soft atmospheric vibes","gentle background ambience for an unhurried night","dreamy lights and a quiet cinematic mood",
+ "soft shadows and tranquil late-night ambience","a calm space filled with gentle ambient detail","slow city ambience under muted evening lights"
+];
+
+
+function cleanCore(k){
+ return String(k||"")
+   .toLowerCase()
+   .replace(/[^\w\s-]/g," ")
+   .replace(/\b(lofi|jazz|bossa nova|dark piano|dark academia|guitar|acoustic|piano|baby lullaby|gentle lullaby|music box|tibetan flute|deep house|techno edm|techno melodic)\b/g," ")
+   .replace(/\s+/g," ")
+   .trim();
+}
+function titleCase(s){return s.replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase())}
+function unique(arr){return [...new Set(arr.map(x=>x.trim()).filter(Boolean))]}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+
+const stopTokens = new Set(["the","a","an","for","with","and","of","in","on","to"]);
+const semanticGroups = [
+ ["rain","rainy","rainfall","drizzle","showers"],
+ ["sleep","sleeping","bedtime"],
+ ["calm","calming","peaceful","relaxing","soothing"],
+ ["night","nighttime","midnight"],
+ ["music","melody","melodies","beats","sound","sounds","audio"],
+ ["ambience","ambient","atmosphere","vibes","mood"],
+ ["cozy","warm","comforting"],
+ ["study","focus","work","productivity"],
+ ["smooth","soft","gentle","mellow"]
+];
+
+function normalizePhrase(s){
+ return String(s||"")
+   .toLowerCase()
+   .replace(/[^\w\s-]/g," ")
+   .replace(/\s+/g," ")
+   .trim();
+}
+
+function singularToken(t){
+ if(t.endsWith("ies") && t.length>4) return t.slice(0,-3)+"y";
+ if(t.endsWith("s") && !t.endsWith("ss") && t.length>3) return t.slice(0,-1);
+ return t;
+}
+
+function canonicalToken(t){
+ const token=singularToken(t.toLowerCase());
+ for(const group of semanticGroups){
+   if(group.includes(token)) return group[0];
+ }
+ return token;
+}
+
+function tokenSignature(s){
+ return normalizePhrase(s)
+   .split(" ")
+   .filter(Boolean)
+   .filter(t=>!stopTokens.has(t))
+   .map(canonicalToken);
+}
+
+function hasDuplicateMeaningWords(s){
+ const toks=tokenSignature(s);
+ const counts={};
+ for(const t of toks){ counts[t]=(counts[t]||0)+1; }
+ return Object.values(counts).some(n=>n>1);
+}
+
+function hasAdjacentDuplicate(s){
+ const toks=normalizePhrase(s).split(" ").filter(Boolean);
+ for(let i=1;i<toks.length;i++){
+   if(canonicalToken(toks[i])===canonicalToken(toks[i-1])) return true;
+ }
+ return false;
+}
+
+
+function uniqueCanonicalTokens(tokens){
+ const out=[];
+ const seen=new Set();
+ for(const t of tokens){
+   const c=canonicalToken(t);
+   if(!seen.has(c)){
+     seen.add(c);
+     out.push(t);
+   }
+ }
+ return out;
+}
+
+function stripRepeatedConcepts(text){
+ let toks=normalizePhrase(text).split(" ").filter(Boolean);
+ toks=uniqueCanonicalTokens(toks);
+ return toks.join(" ").trim();
+}
+
+
+function phraseSimilarity(a,b){
+ const A=new Set(tokenSignature(a)), B=new Set(tokenSignature(b));
+ if(!A.size || !B.size) return 0;
+ let inter=0; for(const x of A) if(B.has(x)) inter++;
+ const union=new Set([...A,...B]).size;
+ return inter/union;
+}
+
+function isNaturalKeyword(s){
+ const p=normalizePhrase(s);
+ if(!p || p.split(" ").length<2) return false;
+ if(hasAdjacentDuplicate(p) || hasDuplicateMeaningWords(p)) return false;
+ if(/\b(rainy rain|rain rain|smooth smooth|sleep rain sleep|music music|beats beats|night night|calm relaxing|relaxing calm)\b/.test(p)) return false;
+ return true;
+}
+
+function addCandidate(list,candidate,selectedNiche,baseCore=""){
+ let c=stripRepeatedConcepts(candidate);
+ c=normalizePhrase(c);
+ if(baseCore){
+   const baseTokens=tokenSignature(baseCore);
+   const candTokens=normalizePhrase(c).split(" ").filter(Boolean);
+   const filtered=[];
+   const seenBase=new Set(baseTokens);
+   for(const t of candTokens){
+     const canon=canonicalToken(t);
+     // Keep a base concept at most once across the whole phrase.
+     if(filtered.some(x=>canonicalToken(x)===canon)) continue;
+     filtered.push(t);
+   }
+   c=filtered.join(" ").trim();
+ }
+ if(!isNaturalKeyword(c)) return;
+ if(selectedNiche && containsOtherNicheTerm(c,selectedNiche)) return;
+ if(list.some(x=>normalizePhrase(x)===c)) return;
+ if(list.some(x=>phraseSimilarity(x,c)>=0.82)) return;
+ list.push(c);
+}
+
+
+
+function getSelectedAtmosphereOptions(){
+ return Array.from(document.querySelectorAll(".atmo-option:checked")).map(x=>x.value);
+}
+function updateAtmosphereSelectionUI(){
+ const all=Array.from(document.querySelectorAll(".atmo-option"));
+ const selected=all.filter(x=>x.checked);
+ const count=$("atmoCount");
+ if(count) count.textContent=`${selected.length} / 5 selected`;
+ all.forEach(cb=>{ cb.disabled=!cb.checked && selected.length>=5; });
+}
+
+function validate(){
+ const selectedAtmos=getSelectedAtmosphereOptions();
+ const vals={
+   cluster:$("cluster").value.trim(),
+   main:$("mainKeyword").value.trim(),
+   niche:$("niche").value,
+   use:$("useCase").value,
+   atmosphereOptions:selectedAtmos
+ };
+ const missing=[];
+ if(!vals.cluster)missing.push("Topic Cluster");
+ if(!vals.main)missing.push("Main Keyword");
+ if(!vals.niche)missing.push("Niche");
+ if(!vals.use)missing.push("Use Case");
+ if(missing.length){
+   showWarn("Please complete: "+missing.join(", ")+".");
+   return null;
+ }
+ if(selectedAtmos.length<3){
+   showWarn("Please select at least 3 Atmosphere / Vibes options.");
+   return null;
+ }
+ if(selectedAtmos.length>5){
+   showWarn("Please select a maximum of 5 Atmosphere / Vibes options.");
+   return null;
+ }
+ $("warning").style.display="none";
+ return vals;
+}
+
+function showWarn(t){
+ $("warning").textContent=t;
+ $("warning").style.display="block";
+}
+
+
+
+const NICHE_GROUPS = {
+ "Lofi":["lofi"],
+ "Jazz / Bossa Nova":["jazz","bossa nova","bossa"],
+ "Dark Piano / Dark Academia":["dark piano","dark academia"],
+ "Guitar / Acoustic":["guitar","acoustic"],
+ "Piano":["piano"],
+ "Baby Lullaby / Gentle Lullaby / Music Box":["baby lullaby","gentle lullaby","music box","lullaby"],
+ "Tibetan Flute":["tibetan flute"],
+ "Deep House / Techno EDM / Techno Melodic":["deep house","techno edm","edm","techno melodic","melodic techno"]
+};
+
+function selectedNicheTerms(selectedNiche){
+ return NICHE_GROUPS[selectedNiche] || [normalizePhrase(selectedNiche)];
+}
+
+function removeOtherNicheTerms(text, selectedNiche){
+ let s=normalizePhrase(text);
+ const allowed=new Set(selectedNicheTerms(selectedNiche));
+ for(const [group,terms] of Object.entries(NICHE_GROUPS)){
+   if(group===selectedNiche) continue;
+   for(const term of terms){
+     const rg=new RegExp("\\b"+term.replace(/\s+/g,"\\s+")+"\\b","gi");
+     s=s.replace(rg," ");
+   }
+ }
+ return s.replace(/\s+/g," ").trim();
+}
+
+function containsOtherNicheTerm(text, selectedNiche){
+ const s=normalizePhrase(text);
+ for(const [group,terms] of Object.entries(NICHE_GROUPS)){
+   if(group===selectedNiche) continue;
+   for(const term of terms){
+     const rg=new RegExp("\\b"+term.replace(/\s+/g,"\\s+")+"\\b","i");
+     if(rg.test(s)) return true;
+   }
+ }
+ return false;
+}
+
+function selectedNicheTerm(v){
+ return selectedNicheTerms(v.niche)[0];
+}
+
+function selectedNicheDisplayVariants(v){
+ const n=v.niche;
+ if(n==="Jazz / Bossa Nova") return ["jazz","bossa nova","jazz & bossa nova"];
+ if(n==="Dark Piano / Dark Academia") return ["dark piano","dark academia","dark academia piano"];
+ if(n==="Guitar / Acoustic") return ["acoustic guitar","guitar","acoustic"];
+ if(n==="Baby Lullaby / Gentle Lullaby / Music Box") return ["baby lullaby","gentle lullaby","music box","gentle music box lullaby"];
+ if(n==="Deep House / Techno EDM / Techno Melodic") return ["deep house","melodic techno","techno edm","deep house & melodic techno"];
+ return [selectedNicheTerm(v)];
+}
+
+
+function baseTopicParts(v){
+ const main=normalizePhrase(v.main);
+ const niche=normalizePhrase(v.niche);
+ const strippedMain=removeOtherNicheTerms(main,v.niche);
+ const core=removeOtherNicheTerms(cleanCore(strippedMain),v.niche);
+ const words=core.split(" ").filter(Boolean);
+ return {main,niche,core,words};
+}
+
+function generateKeywords(v){
+ const {main,niche,core}=baseTopicParts(v);
+ const out=[];
+ const joined=core || removeOtherNicheTerms(main,v.niche) || main;
+ const has=(w)=>joined.includes(w);
+ const variants=selectedNicheDisplayVariants(v);
+ const baseSig=new Set(tokenSignature(joined));
+ let pool=[];
+
+ function maybePhrase(stem, addon){
+   const addonSig=tokenSignature(addon);
+   const overlap=addonSig.some ? addonSig.some(x=>baseSig.has(x)) : false;
+   return overlap ? stem : `${stem} ${addon}`;
+ }
+ function addPool(candidate){ pool.push(candidate); }
+
+ if(v.niche==="Lofi"){
+   [
+     `${joined} lofi`,
+     maybePhrase(`${joined} lofi`,`ambience`),
+     maybePhrase(`${joined}`,`study lofi`),
+     maybePhrase(`${joined}`,`chill beats`),
+     maybePhrase(`${joined}`,`focus beats`),
+     maybePhrase(`${joined}`,`background lofi`),
+     maybePhrase(`${joined}`,`night lofi`),
+     maybePhrase(`${joined}`,`relaxing beats`),
+     maybePhrase(`${joined}`,`cozy mood`)
+   ].forEach(addPool);
+ } else if(v.niche==="Jazz / Bossa Nova"){
+   [
+     `${joined} jazz`,
+     `${joined} bossa nova`,
+     maybePhrase(`relaxing ${joined}`,`jazz`),
+     maybePhrase(`cozy ${joined}`,`bossa nova`),
+     maybePhrase(`${joined} jazz`,`ambience`),
+     maybePhrase(`${joined} bossa nova`,`ambience`),
+     maybePhrase(`${joined}`,`cafe jazz`),
+     maybePhrase(`${joined}`,`lounge bossa nova`),
+     `${joined} jazz and bossa nova`
+   ].forEach(addPool);
+ } else if(v.niche==="Dark Piano / Dark Academia"){
+   [
+     `${joined} dark piano`,
+     `${joined} dark academia`,
+     `${joined} dark academia piano`,
+     maybePhrase(`melancholic ${joined}`,`piano`),
+     maybePhrase(`${joined}`,`study piano`),
+     maybePhrase(`${joined} dark piano`,`ambience`),
+     maybePhrase(`${joined}`,`gothic piano`),
+     maybePhrase(`${joined} dark academia`,`ambience`),
+     maybePhrase(`${joined}`,`emotional piano`)
+   ].forEach(addPool);
+ } else if(v.niche==="Guitar / Acoustic"){
+   [
+     `${joined} acoustic guitar`,
+     `${joined} guitar`,
+     maybePhrase(`${joined}`,`acoustic music`),
+     maybePhrase(`${joined}`,`relaxing guitar`),
+     maybePhrase(`${joined}`,`fingerstyle guitar`),
+     maybePhrase(`${joined}`,`acoustic ambience`),
+     maybePhrase(`${joined}`,`guitar background music`),
+     maybePhrase(`${joined}`,`calm acoustic`),
+     maybePhrase(`${joined}`,`gentle guitar`)
+   ].forEach(addPool);
+ } else if(v.niche==="Piano"){
+   [
+     `${joined} piano`,
+     `${joined} piano music`,
+     maybePhrase(`${joined}`,`relaxing piano`),
+     maybePhrase(`${joined}`,`study piano`),
+     maybePhrase(`${joined}`,`peaceful piano`),
+     maybePhrase(`${joined}`,`emotional piano`),
+     maybePhrase(`${joined}`,`piano ambience`),
+     maybePhrase(`${joined}`,`focus piano`),
+     maybePhrase(`${joined}`,`background piano`)
+   ].forEach(addPool);
+ } else if(v.niche==="Baby Lullaby / Gentle Lullaby / Music Box"){
+   [
+     `${joined} baby lullaby`,
+     `${joined} gentle lullaby`,
+     `${joined} music box`,
+     maybePhrase(`${joined}`,`bedtime lullaby`),
+     maybePhrase(`${joined}`,`soothing music box`),
+     maybePhrase(`${joined}`,`gentle sleep music`),
+     maybePhrase(`${joined}`,`baby sleep music`),
+     maybePhrase(`${joined}`,`lullaby melody`),
+     maybePhrase(`${joined}`,`music box lullaby`)
+   ].forEach(addPool);
+ } else if(v.niche==="Tibetan Flute"){
+   [
+     `${joined} tibetan flute`,
+     maybePhrase(`${joined}`,`flute meditation`),
+     maybePhrase(`${joined}`,`relaxing tibetan flute`),
+     maybePhrase(`${joined}`,`peaceful flute music`),
+     maybePhrase(`${joined}`,`meditation flute`),
+     maybePhrase(`${joined}`,`tibetan ambience`),
+     maybePhrase(`${joined}`,`healing flute`),
+     maybePhrase(`${joined}`,`calm flute music`),
+     maybePhrase(`${joined}`,`spiritual flute`)
+   ].forEach(addPool);
+ } else if(v.niche==="Deep House / Techno EDM / Techno Melodic"){
+   [
+     `${joined} deep house`,
+     `${joined} melodic techno`,
+     `${joined} techno edm`,
+     maybePhrase(`${joined}`,`deep house mix`),
+     maybePhrase(`${joined}`,`melodic techno mix`),
+     maybePhrase(`${joined}`,`night drive techno`),
+     maybePhrase(`${joined}`,`deep electronic mix`),
+     maybePhrase(`${joined}`,`atmospheric techno`),
+     `${joined} deep house and melodic techno`
+   ].forEach(addPool);
+ }
+
+ if(has("tokyo") && has("rain")){
+   [
+     `rainy tokyo ${variants[0]}`,
+     `tokyo night ${variants[Math.min(1,variants.length-1)]}`,
+     maybePhrase("tokyo rain","ambience"),
+     `japanese rain ${variants[0]}`,
+     "tokyo study music"
+   ].forEach(x=>pool.unshift(x));
+ }
+ if(has("autumn")){
+   [
+     `autumn ${variants[0]}`,
+     variants[1] ? `autumn ${variants[1]}` : `cozy autumn ${variants[0]}`,
+     `relaxing autumn ${variants[0]}`,
+     `cozy autumn ${variants[Math.min(1,variants.length-1)]}`,
+     "autumn night vibes",
+     "fall ambience"
+   ].forEach(x=>pool.unshift(x));
+ }
+ if(has("rain") && v.use==="Sleep"){
+   ["rain sounds for sleep","gentle rain sleep music","night rain ambience","soothing rain sounds"].forEach(x=>pool.unshift(x));
+ }
+ if(has("cozy") && has("rain")){
+   ["cozy rain ambience",`rainy room ${variants[0]}`,"cozy rainy night","window rain ambience"].forEach(x=>pool.unshift(x));
+ }
+
+ for(const c of pool) addCandidate(out,c,v.niche,joined);
+
+ const safeFallback=[
+   maybePhrase(`${joined}`,`mood`),
+   maybePhrase(`${joined}`,`background music`),
+   maybePhrase(`${joined}`,`relaxing music`),
+   maybePhrase(`${joined}`,`study music`),
+   maybePhrase(`${joined}`,`night vibes`),
+   maybePhrase(`${joined}`,`focus music`)
+ ];
+ for(const c of safeFallback){
+   if(out.length>=9) break;
+   addCandidate(out,c,v.niche,joined);
+ }
+
+ state.keywords=out.slice(0,9);
+}
+
+function sentenceCase(s){
+ const t=String(s||"").trim().replace(/\s+/g," ");
+ if(!t)return "";
+ return t.charAt(0).toUpperCase()+t.slice(1).toLowerCase();
+}
+
+function nicheLabel(niche){
+ const map={
+   "Lofi":"lofi",
+   "Jazz / Bossa Nova":"jazz / bossa nova",
+   "Dark Piano / Dark Academia":"dark piano / dark academia",
+   "Guitar / Acoustic":"guitar / acoustic",
+   "Piano":"piano",
+   "Baby Lullaby / Gentle Lullaby / Music Box":"baby lullaby / gentle lullaby / music box",
+   "Tibetan Flute":"tibetan flute",
+   "Deep House / Techno EDM / Techno Melodic":"deep house / techno edm / melodic techno"
+ };
+ return map[niche] || niche.toLowerCase();
+}
+
+function generateMoods(v){
+ const src=[v.main,...state.keywords].map(normalizePhrase).filter(Boolean);
+ const main=normalizePhrase(v.main);
+ const candidates=[];
+ const add=(x)=>{
+   const p=normalizePhrase(x);
+   if(!p || p.split(" ").length<2 || p.split(" ").length>6)return;
+   if(hasDuplicateMeaningWords(p) || hasAdjacentDuplicate(p))return;
+   if(candidates.some(c=>phraseSimilarity(c,p)>=0.82))return;
+   candidates.push(p);
+ };
+
+ const has=(w)=>src.some(s=>s.includes(w));
+
+ if(has("tokyo") && has("rain")){
+   ["rainy tokyo night","tokyo after the rain","quiet tokyo rain at night","rainy tokyo window","late-night tokyo rain"].forEach(add);
+ }
+ if(has("autumn")){
+   ["cozy autumn evening","quiet autumn night","warm autumn afternoon","autumn cafe ambience","peaceful fall evening"].forEach(add);
+ }
+ if(has("rain") && v.use==="Sleep"){
+   ["rainy night for deep sleep","gentle rain at bedtime","quiet rain through the night","soft nighttime rainfall"].forEach(add);
+ }
+ if(has("cozy") && has("rain")){
+   ["cozy rainy room","warm rainy evening","quiet room on a rainy night","cozy window rain"].forEach(add);
+ }
+ if(has("night")){
+   ["quiet midnight atmosphere","late-night calm","peaceful night ambience","after-dark relaxation"].forEach(add);
+ }
+ if(has("cafe") || has("coffee")){
+   ["cozy cafe evening","quiet coffee shop ambience","late-night cafe mood","warm cafe corner"].forEach(add);
+ }
+
+ const core=cleanCore(v.main);
+ [
+   `${core} evening`,
+   `${core} night`,
+   `cozy ${core}`,
+   `peaceful ${core}`,
+   `quiet ${core} ambience`,
+   `${core} after dark`
+ ].forEach(add);
+
+ state.moods=candidates.slice(0,5);
+ if(!state.moods.length) state.moods=[normalizePhrase(v.main)];
+}
+
+function sanitizeMoodForNiche(mood,niche){
+ let m=removeOtherNicheTerms(normalizePhrase(mood),niche);
+ const allAllowed=selectedNicheTerms(niche);
+ for(const term of allAllowed){
+   const rg=new RegExp("\\b"+term.replace(/\s+/g,"\\s+")+"\\b","gi");
+   m=m.replace(rg," ");
+ }
+ m=m.replace(/\b(music|beats|melody|melodies)\b/gi," ");
+ m=m.replace(/\s+/g," ").trim();
+ return m || normalizePhrase(mood);
+}
+
+function chooseNicheForTitle(v,i,mood){
+ const variants=selectedNicheDisplayVariants(v);
+ if(variants.length===1) return variants[0];
+ // Prefer single natural genre phrase, occasionally a mixed phrase.
+ if(i%5===4 && variants.length>2) return variants[2];
+ return variants[i%Math.min(2,variants.length)];
+}
+
+function chooseSeparator(i,phrase){
+ const p=normalizePhrase(phrase);
+ if(i%3===0)return " | ";
+ if(p.includes("rain"))return " 🌧️ ";
+ if(p.includes("night"))return " 🌙 ";
+ if(p.includes("autumn")||p.includes("fall"))return " 🍂 ";
+ if(p.includes("sleep"))return " 😴 ";
+ if(p.includes("cafe")||p.includes("coffee"))return " ☕ ";
+ return i%2===0 ? " ✦ " : " • ";
+}
+
+function useCasePhrase(u){
+ const map={Study:"study",Focus:"focus",Work:"work",Relax:"relaxation",Sleep:"sleep"};
+ return map[u]||u.toLowerCase();
+}
+
+function buildTitle(v,mood,emotion,atmosphere,i){
+ const cleanMood=sanitizeMoodForNiche(mood,v.niche);
+ const genre=chooseNicheForTitle(v,i,cleanMood);
+ const separator=chooseSeparator(i,cleanMood+" "+atmosphere);
+ const left=`${cleanMood} ${genre}`.replace(/\s+/g," ").trim();
+ const right=`${emotion.toLowerCase()} for ${useCasePhrase(v.use)} + ${normalizePhrase(atmosphere)}`;
+ return sentenceCase(left + separator + right);
+}
+
+function generateEmotions(v){
+ let base=["Calm Music","Chill Beats","Peaceful Music","Relaxing Music","Uplifting Music","Calm Beats","Peaceful Melody","Relaxing Melody","Chill Music"];
+ if(v.niche.includes("Lofi")) base=["Chill Beats","Calm Beats","Relaxing Music","Peaceful Beats","Chill Music","Calm Music"];
+ else if(v.niche.includes("Piano")||v.niche.includes("Lullaby")||v.niche.includes("Music Box")) base=["Peaceful Melody","Relaxing Music","Calm Melody","Peaceful Music","Calm Music"];
+ else if(v.niche.includes("Jazz")||v.niche.includes("Bossa")) base=["Relaxing Music","Chill Music","Calm Music","Peaceful Music","Uplifting Music"];
+ else if(v.niche.includes("Techno")||v.niche.includes("House")) base=["Uplifting Music","Chill Beats","Calm Beats","Relaxing Music","Chill Music"];
+ state.emotions=base.slice(0,5);
+}
+function generateAtmos(v){
+ const selected=(v.atmosphereOptions||[]).map(normalizePhrase).filter(Boolean);
+ const related=[v.main,...state.keywords].map(normalizePhrase).join(" ");
+ const candidates=[];
+
+ const hasCtx=(w)=>related.includes(w);
+ const add=(s)=>{
+   const p=normalizePhrase(s);
+   if(!p)return;
+   if(p.split(" ").length>7)return;
+   if(hasDuplicateMeaningWords(p)||hasAdjacentDuplicate(p))return;
+   if(candidates.some(x=>phraseSimilarity(x,p)>=0.82))return;
+   candidates.push(p);
+ };
+
+ function phrasesForOption(opt){
+   const out=[];
+   const push=(x)=>{ if(x) out.push(x); };
+
+   // Base variations per selected option, developed independently.
+   const map={
+     "window":["cozy window ambience","quiet window view","soft window atmosphere"],
+     "rooftop":["quiet rooftop ambience","open rooftop atmosphere","calm rooftop mood"],
+     "balcony":["quiet balcony ambience","cozy balcony atmosphere","balcony with soft air"],
+     "room":["cozy room ambience","quiet room atmosphere","warm room mood"],
+     "cabin":["cozy cabin ambience","quiet cabin atmosphere","warm cabin mood"],
+     "lounge":["calm lounge ambience","quiet lounge atmosphere","soft lounge mood"],
+     "cafe":["cozy cafe ambience","quiet cafe atmosphere","warm cafe mood"],
+     "bar":["calm bar ambience","soft bar atmosphere","late bar mood"],
+     "coffee shop":["cozy coffee shop ambience","quiet coffee shop mood","warm coffee shop atmosphere"],
+     "office":["calm office ambience","quiet office atmosphere","focused office mood"],
+     "apartments":["quiet apartment ambience","cozy apartment atmosphere","soft apartment mood"],
+     "bedroom":["cozy bedroom ambience","quiet bedroom atmosphere","soft bedroom mood"],
+     "living room":["cozy living room ambience","quiet living room mood","warm living room atmosphere"],
+     "city":["quiet city ambience","soft city lights","calm city atmosphere"],
+     "street":["quiet street ambience","soft street atmosphere","calm street mood"],
+     "nature":["peaceful nature ambience","soft natural atmosphere","calm nature mood"],
+     "forest":["peaceful forest ambience","quiet forest atmosphere","soft forest mood"],
+     "river":["peaceful river ambience","soft river atmosphere","calm river mood"],
+     "water sound":["gentle water sound ambience","soft water sounds","calming water sound"],
+     "water flow":["gentle water flow ambience","soft flowing water","calming water flow"],
+     "bamboo water fountain":["bamboo water fountain ambience","gentle bamboo fountain","calm bamboo fountain"],
+     "bamboo water flowing":["bamboo water flowing ambience","soft bamboo water flow","gentle bamboo water"],
+     "mountain":["peaceful mountain ambience","quiet mountain atmosphere","soft mountain mood"],
+     "lakeside":["peaceful lakeside ambience","quiet lakeside atmosphere","soft lakeside mood"],
+     "seaside":["peaceful seaside ambience","soft seaside atmosphere","calm seaside mood"],
+     "ocean":["peaceful ocean ambience","soft ocean atmosphere","calm ocean mood"],
+     "night":["quiet night ambience","soft nighttime atmosphere","calm late-night mood"],
+     "early morning":["calm early morning ambience","soft early morning mood","peaceful dawn atmosphere"],
+     "morning":["calm morning ambience","soft morning atmosphere","peaceful morning mood"],
+     "golden hour":["soft golden hour ambience","warm golden hour mood","peaceful golden light"],
+     "evening":["calm evening ambience","soft evening atmosphere","peaceful evening mood"]
+   };
+   (map[opt] || [`${opt} ambience`, `quiet ${opt}`, `calm ${opt} atmosphere`]).forEach(push);
+
+   // Context refinement for the same selected option only.
+   if(hasCtx("rain")){
+     if(["window","rooftop","balcony","street","city","cafe","coffee shop","room","bedroom","living room","office","apartments"].includes(opt)){
+       push(`rainy ${opt} ambience`);
+     }
+     if(opt==="window") push("rain by the window");
+     if(opt==="street") push("street ambience after rain");
+     if(opt==="city") push("rainy city lights");
+   }
+   if(hasCtx("tokyo") && opt==="city") push("quiet tokyo city lights");
+   if(hasCtx("autumn")){
+     if(["cafe","coffee shop","room","bedroom","living room","forest","lakeside","mountain","city","street","balcony","rooftop"].includes(opt)){
+       push(`autumn ${opt} ambience`);
+     }
+     if(opt==="evening") push("soft autumn evening mood");
+   }
+   if(hasCtx("sleep")){
+     if(["bedroom","room","living room","night","window","water sound","water flow","bamboo water flowing"].includes(opt)){
+       push(`calm ${opt} for sleep`);
+     }
+   }
+   if(hasCtx("study") || hasCtx("focus") || hasCtx("work")){
+     if(["office","window","room","cafe","coffee shop","city","balcony"].includes(opt)){
+       push(`focused ${opt} ambience`);
+     }
+   }
+
+   return out;
+ }
+
+ // Build phrases independently for each chosen option.
+ selected.forEach(opt=>{
+   phrasesForOption(opt).forEach(add);
+ });
+
+ // If still short, recycle distinct alternatives by selected option only.
+ selected.forEach(opt=>{
+   if(candidates.length>=10) return;
+   add(`${opt} atmosphere`);
+   if(candidates.length>=10) return;
+   add(`quiet ${opt} ambience`);
+ });
+
+ state.atmos=candidates.slice(0,10);
+}
+function usePhrase(u){return u==="Relax"?"Relaxation":u}
+function scoreTitle(t,v){
+ let s=66;
+ const low=t.toLowerCase(); const mk=v.main.toLowerCase();
+ if(low.includes(mk))s+=12; else if(state.keywords.some(k=>low.includes(k.toLowerCase())))s+=8;
+ if(low.indexOf(cleanCore(v.main).split(" ")[0])<28)s+=5;
+ if(t.length>=55&&t.length<=90)s+=7; else if(t.length<=105)s+=3;
+ if(state.emotions.some(e=>low.includes(e.toLowerCase())))s+=4;
+ if(state.atmos.some(a=>low.includes(a.toLowerCase())))s+=4;
+ if(t.includes("|"))s+=2;
+ return Math.min(98,s);
+}
+function generateTitles(v){
+ const moods=state.moods.length?state.moods:[normalizePhrase(v.main)];
+ const emos=shuffle(state.emotions);
+ const ats=shuffle(state.atmos);
+ let titles=[];
+
+ function compactMood(m){
+   let words=normalizePhrase(m).split(" ");
+   return words.slice(0,4).join(" ");
+ }
+ function compactAtmos(a){
+   return normalizePhrase(a).split(" ").slice(0,7).join(" ");
+ }
+ function fitTitle(mood,emo,at,i){
+   let t=buildTitle(v,compactMood(mood),emo,compactAtmos(at),i);
+   if(t.length<100) return t;
+   t=buildTitle(v,compactMood(mood),emo,compactAtmos(at).split(" ").slice(0,5).join(" "),i);
+   if(t.length<100) return t;
+   t=buildTitle(v,compactMood(mood).split(" ").slice(0,3).join(" "),emo,compactAtmos(at).split(" ").slice(0,3).join(" "),i);
+   if(t.length<100) return t;
+   // Final guaranteed compact form while preserving structure.
+   const cleanMood=sanitizeMoodForNiche(compactMood(mood).split(" ").slice(0,3).join(" "),v.niche);
+   const genre=chooseNicheForTitle(v,i,cleanMood);
+   const separator=chooseSeparator(i,cleanMood+" "+at);
+   const shortEmotion=String(emo).toLowerCase().replace("relaxing music","calm music");
+   t=sentenceCase(`${cleanMood} ${genre}${separator}${shortEmotion} for ${useCasePhrase(v.use)} + ${compactAtmos(at).split(" ").slice(0,3).join(" ")}`);
+   return t.slice(0,99).replace(/\s+\S*$/,"").replace(/[|+•✦🌧️🌙🍂😴☕]\s*$/,"").trim();
+ }
+
+ for(let i=0;i<30 && titles.length<10;i++){
+   const mood=moods[i%moods.length];
+   const emo=emos[i%emos.length];
+   const at=ats[i%ats.length];
+   const t=fitTitle(mood,emo,at,i);
+   if(t.length<100) titles.push(t);
+ }
+ titles=unique(titles).map(t=>({title:t,score:scoreTitle(t,v),len:t.length}));
+ titles.sort((a,b)=>b.score-a.score);
+ state.titles=titles.slice(0,10);
+}
+function hashtag(s){return "#"+s.replace(/[^a-zA-Z0-9 ]/g," ").trim().split(/\s+/).map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join("")}
+function copyText(t,btn){
+ const done=()=>{const old=btn.textContent;btn.textContent="Copied!";setTimeout(()=>btn.textContent=old,900)};
+ if(navigator.clipboard && window.isSecureContext){
+   navigator.clipboard.writeText(t).then(done).catch(()=>fallbackCopy(t,done));
+ } else { fallbackCopy(t,done); }
+}
+function fallbackCopy(t,done){
+ const ta=document.createElement("textarea");
+ ta.value=t; ta.style.position="fixed"; ta.style.opacity="0";
+ document.body.appendChild(ta); ta.focus(); ta.select();
+ try{document.execCommand("copy");done();}catch(e){alert("Copy failed. Please select and copy manually.");}
+ document.body.removeChild(ta);
+}
+function render(v){
+ const meta=[v.main,...state.keywords].join(", ");
+ const hashtags=[v.main,...state.keywords.slice(0,4)].map(hashtag).join(" ");
+ const best=state.titles[0];
+ const related=[v.main,...state.keywords].join(" ").toLowerCase();
+ const kwHtml=state.keywords.map((k,i)=>`<div class="keyword"><b>${i+1}. ${k}</b><div class="potential ${i<4?'high':''}">SEO Potential: ${i<4?'High':i<7?'Medium':'Low'}</div></div>`).join("");
+ const atHtml=state.atmos.map((a,i)=>`<div class="atmo">${i+1}. ${a}</div>`).join("");
+ const titleHtml=state.titles.slice(1).map((o,i)=>`<div class="title-item"><p><b>${i+2}.</b> ${o.title}</p><div class="title-bottom"><div class="metrics"><span>SEO Score ${o.score}/100 | ${o.len} chars</span></div><button class="copy" onclick='copyText(${JSON.stringify(o.title)},this)'>Copy</button></div></div>`).join("");
+ $("output").innerHTML=`
+ <div class="card result-card"><div class="kicker">Keyword Analysis</div><div class="row-between"><div><h2 class="section-title">${v.main}</h2><p class="section-sub" style="margin:4px 0 0">Topic Cluster: ${v.cluster}</p></div><span class="badge">${v.niche} · ${v.use}</span></div></div>
+ <div class="card result-card"><div class="row-between"><div><div class="kicker">Related Keywords</div><h2 class="section-title">9 SEO keyword ideas</h2><p class="section-sub" style="margin:4px 0 0">Related keywords may mix genres only within the selected niche group, while blocking overlap with other niche groups.</p></div><button class="copy" onclick='copyText(${JSON.stringify(state.keywords.join(", "))},this)'>Copy Keywords</button></div><div class="keyword-list">${kwHtml}</div></div>
+ <div class="card result-card"><div class="row-between"><div><div class="kicker">AI Mood / Scenario</div><h2 class="section-title">High-intent scenario hooks</h2></div><button class="copy" onclick='copyText(${JSON.stringify(state.moods.join(", "))},this)'>Copy Mood Ideas</button></div><div class="chips">${state.moods.map(x=>`<span class="chip">${sentenceCase(x)}</span>`).join("")}</div></div>
+ <div class="card result-card"><div class="kicker">Emotional Keywords</div><div class="chips">${state.emotions.map(x=>`<span class="chip">${x}</span>`).join("")}</div></div>
+ <div class="card result-card"><div class="kicker">Atmosphere / Vibes</div><h2 class="section-title">10 cinematic hooks</h2><div class="atmo-list">${atHtml}</div></div>
+ <div class="card result-card recommended"><div class="row-between"><div><span class="badge">Recommended</span><div class="kicker" style="margin-top:12px">Best Title</div></div><button class="copy" onclick='copyText(${JSON.stringify(best.title)},this)'>Copy Title</button></div><div class="title-text">${best.title}</div><div class="metrics"><span class="metric">SEO Score: ${best.score}/100</span><span class="metric">${best.len} characters</span></div></div>
+ <div class="card result-card"><div class="kicker">Alternative Titles</div><h2 class="section-title">9 additional variations</h2><div class="title-list">${titleHtml}</div></div>
+ <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">Main + 9 Related Keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div></div>
+ <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Uses SEO-potential ranking. No fabricated monthly search-volume data.</small></div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+   <button class="primary" style="width:100%;grid-column:auto" id="copyAllBtn">Copy All Key Output</button>
+   <button class="secondary" style="width:100%" id="exportResultsBtn">Export Spreadsheet (.xlsx)</button>
+ </div>
+ `;
+ $("output").style.display="contents";
+ const exportResultsBtn = $("exportResultsBtn");
+ if(exportResultsBtn){ exportResultsBtn.onclick = exportSpreadsheet; }
+ const copyAllBtn = $("copyAllBtn");
+ if(copyAllBtn){
+   copyAllBtn.onclick = function(){
+     const allText = best.title + "\n\nMeta Tags:\n" + meta + "\n\nHashtags:\n" + hashtags;
+     copyText(allText, copyAllBtn);
+   };
+ }
+}
+async function run(mode="all"){
+ try{
+   const v=validate(); if(!v)return;
+   $("placeholder").style.display="none";
+   $("output").style.display="none";
+   $("loading").style.display="block";
+   $("loadingText").textContent=mode==="titles"?"Generating Titles...":"Analyzing SEO Keywords...";
+   await new Promise(r=>setTimeout(r,250));
+
+   if(mode==="titles" && (!state.keywords.length || !state.atmos.length || !state.emotions.length)){
+     generateKeywords(v); generateMoods(v); generateEmotions(v); generateAtmos(v);
+   }
+   if(mode==="keywords"){ generateKeywords(v); generateMoods(v); generateEmotions(v); if(!state.atmos.length)generateAtmos(v); }
+   if(mode==="atmos"){ generateAtmos(v); if(!state.keywords.length)generateKeywords(v); if(!state.moods.length)generateMoods(v); if(!state.emotions.length)generateEmotions(v); }
+   if(mode==="all"){ generateKeywords(v); generateMoods(v); generateEmotions(v); generateAtmos(v); }
+
+   generateTitles(v);
+   if(!state.titles.length) throw new Error("No valid titles were generated.");
+   render(v);
+ }catch(err){
+   console.error(err);
+   showWarn("Generator error: "+(err && err.message ? err.message : "Unknown error"));
+   $("placeholder").style.display="block";
+ }finally{
+   $("loading").style.display="none";
+ }
+}
+
+function safeFilenamePart(value){
+ return String(value || "Untitled")
+   .replace(/[\\/:*?"<>|]+/g," ")
+   .replace(/\s+/g," ")
+   .trim();
+}
+function formatDownloadDate(d){
+ const y=d.getFullYear();
+ const m=String(d.getMonth()+1).padStart(2,"0");
+ const day=String(d.getDate()).padStart(2,"0");
+ return `${y}-${m}-${day}`;
+}
+function xmlEscape(s){
+ return String(s ?? "")
+   .replace(/&/g,"&amp;")
+   .replace(/</g,"&lt;")
+   .replace(/>/g,"&gt;")
+   .replace(/"/g,"&quot;")
+   .replace(/'/g,"&apos;");
+}
+function crc32(bytes){
+ let table=crc32.table;
+ if(!table){
+   table=crc32.table=new Uint32Array(256);
+   for(let n=0;n<256;n++){
+     let c=n;
+     for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);
+     table[n]=c>>>0;
+   }
+ }
+ let crc=0xFFFFFFFF;
+ for(const b of bytes) crc=table[(crc^b)&0xFF]^(crc>>>8);
+ return (crc^0xFFFFFFFF)>>>0;
+}
+function u16(n){return [n&255,(n>>>8)&255]}
+function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}
+function makeZip(files){
+ const enc=new TextEncoder();
+ let local=[], central=[], offset=0, count=0;
+ const chunks=[];
+ const now=new Date();
+ const dosTime=((now.getHours()&31)<<11)|((now.getMinutes()&63)<<5)|((Math.floor(now.getSeconds()/2))&31);
+ const dosDate=(((now.getFullYear()-1980)&127)<<9)|(((now.getMonth()+1)&15)<<5)|(now.getDate()&31);
+ for(const file of files){
+   const name=enc.encode(file.name);
+   const data=typeof file.data==="string"?enc.encode(file.data):file.data;
+   const crc=crc32(data);
+   const lh=new Uint8Array([
+     ...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(dosTime),...u16(dosDate),
+     ...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0)
+   ]);
+   chunks.push(lh,name,data);
+   const ch=new Uint8Array([
+     ...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(dosTime),...u16(dosDate),
+     ...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0),...u16(0),
+     ...u16(0),...u16(0),...u32(0),...u32(offset)
+   ]);
+   central.push(ch,name);
+   offset += lh.length+name.length+data.length;
+   count++;
+ }
+ let centralSize=0;
+ central.forEach(c=>centralSize+=c.length);
+ const end=new Uint8Array([
+   ...u32(0x06054b50),...u16(0),...u16(0),...u16(count),...u16(count),
+   ...u32(centralSize),...u32(offset),...u16(0)
+ ]);
+ const all=[...chunks,...central,end];
+ const total=all.reduce((s,a)=>s+a.length,0);
+ const out=new Uint8Array(total);
+ let pos=0;
+ for(const a of all){out.set(a,pos);pos+=a.length;}
+ return out;
+}
+function exportSpreadsheet(){
+ const v=validate();
+ if(!v)return;
+ if(!state.titles.length){
+   showWarn("Generate the SEO results first, then export the spreadsheet.");
+   return;
+ }
+
+ const meta=[v.main,...state.keywords].join(", ");
+ const hashtags=[v.main,...state.keywords.slice(0,4)].map(hashtag).join(" ");
+ const downloadDate=formatDownloadDate(new Date());
+
+ const headers=[
+   "No","Cluster","Main Keyword","Related Keyword","Mood / Scenario",
+   "Atmosphere / Vibes","Video Title","Character Count","Meta Tag Keywords",
+   "Description Hashtags","Status","Publish Date","Notes"
+ ];
+
+ const rows=state.titles.map((item,i)=>[
+   i+1,
+   v.cluster,
+   v.main,
+   state.keywords[i%state.keywords.length] || "",
+   sentenceCase(state.moods[i%state.moods.length] || ""),
+   state.atmos[i%state.atmos.length] || "",
+   item.title,
+   item.len,
+   meta,
+   hashtags,
+   "Planned",
+   "",
+   ""
+ ]);
+
+ function colName(n){
+   let s="";
+   while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26);}
+   return s;
+ }
+ function inlineCell(ref,val,style=0){
+   if(typeof val==="number") return `<c r="${ref}" s="${style}"><v>${val}</v></c>`;
+   return `<c r="${ref}" t="inlineStr" s="${style}"><is><t xml:space="preserve">${xmlEscape(val)}</t></is></c>`;
+ }
+ const headerCells=headers.map((h,i)=>inlineCell(`${colName(i+1)}1`,h,1)).join("");
+ const rowXml=rows.map((row,rIdx)=>{
+   const r=rIdx+2;
+   return `<row r="${r}">${row.map((v,cIdx)=>{
+     const style=cIdx===10?2:0;
+     return inlineCell(`${colName(cIdx+1)}${r}`,v,style);
+   }).join("")}</row>`;
+ }).join("");
+
+ const sheetXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetViews>
+   <sheetView workbookViewId="0">
+    <pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>
+    <selection pane="bottomLeft" activeCell="A2" sqref="A2"/>
+   </sheetView>
+  </sheetViews>
+  <sheetFormatPr defaultRowHeight="18"/>
+  <cols>
+   <col min="1" max="1" width="6" customWidth="1"/>
+   <col min="2" max="3" width="22" customWidth="1"/>
+   <col min="4" max="6" width="24" customWidth="1"/>
+   <col min="7" max="7" width="55" customWidth="1"/>
+   <col min="8" max="8" width="15" customWidth="1"/>
+   <col min="9" max="10" width="48" customWidth="1"/>
+   <col min="11" max="11" width="18" customWidth="1"/>
+   <col min="12" max="12" width="16" customWidth="1"/>
+   <col min="13" max="13" width="30" customWidth="1"/>
+  </cols>
+  <sheetData>
+   <row r="1" ht="24" customHeight="1">${headerCells}</row>
+   ${rowXml}
+  </sheetData>
+  <autoFilter ref="A1:M${rows.length+1}"/>
+  <conditionalFormatting sqref="K2:K${rows.length+1}">
+   <cfRule type="expression" dxfId="0" priority="1"><formula>$K2=&quot;In Production&quot;</formula></cfRule>
+   <cfRule type="expression" dxfId="1" priority="2"><formula>$K2=&quot;Scheduled&quot;</formula></cfRule>
+   <cfRule type="expression" dxfId="2" priority="3"><formula>$K2=&quot;Published&quot;</formula></cfRule>
+   <cfRule type="expression" dxfId="3" priority="4"><formula>$K2=&quot;Planned&quot;</formula></cfRule>
+  </conditionalFormatting>
+  <dataValidations count="1">
+   <dataValidation type="list" allowBlank="1" showErrorMessage="1" errorStyle="stop" errorTitle="Invalid Status" error="Choose a status from the dropdown." sqref="K2:K${rows.length+1}">
+    <formula1>&quot;Planned,In Production,Scheduled,Published&quot;</formula1>
+   </dataValidation>
+  </dataValidations>
+ </worksheet>`;
+
+ const stylesXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts count="3">
+   <font><sz val="10"/><name val="Calibri"/></font>
+   <font><b/><color rgb="FFFFFFFF"/><sz val="10"/><name val="Calibri"/></font>
+   <font><color rgb="FF000000"/><sz val="10"/><name val="Calibri"/></font>
+  </fonts>
+  <fills count="3">
+   <fill><patternFill patternType="none"/></fill>
+   <fill><patternFill patternType="gray125"/></fill>
+   <fill><patternFill patternType="solid"><fgColor rgb="FF6C5CE7"/><bgColor indexed="64"/></patternFill></fill>
+  </fills>
+  <borders count="2">
+   <border><left/><right/><top/><bottom/><diagonal/></border>
+   <border>
+    <left style="thin"><color rgb="FFD9DDE7"/></left>
+    <right style="thin"><color rgb="FFD9DDE7"/></right>
+    <top style="thin"><color rgb="FFD9DDE7"/></top>
+    <bottom style="thin"><color rgb="FFD9DDE7"/></bottom>
+    <diagonal/>
+   </border>
+  </borders>
+  <cellStyleXfs count="1">
+   <xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
+  </cellStyleXfs>
+  <cellXfs count="3">
+   <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1">
+    <alignment vertical="top" wrapText="1"/>
+   </xf>
+   <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyAlignment="1">
+    <alignment horizontal="center" vertical="center" wrapText="1"/>
+   </xf>
+   <xf numFmtId="0" fontId="2" fillId="0" borderId="1" xfId="0" applyAlignment="1">
+    <alignment vertical="top" wrapText="1"/>
+   </xf>
+  </cellXfs>
+  <cellStyles count="1">
+   <cellStyle name="Normal" xfId="0" builtinId="0"/>
+  </cellStyles>
+  <dxfs count="4">
+   <dxf><font><b/><color rgb="FF800000"/></font></dxf>
+   <dxf><font><b/><color rgb="FF0000FF"/></font></dxf>
+   <dxf><font><b/><color rgb="FF008000"/></font></dxf>
+   <dxf><font><color rgb="FF000000"/></font></dxf>
+  </dxfs>
+ </styleSheet>`;
+
+ const workbookXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets><sheet name="Cluster Plan" sheetId="1" r:id="rId1"/></sheets>
+ </workbook>`;
+
+ const workbookRels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+ </Relationships>`;
+
+ const rootRels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+  <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
+ </Relationships>`;
+
+ const contentTypes=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
+ </Types>`;
+
+
+ const coreProps=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:dcmitype="http://purl.org/dc/dcmitype/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <dc:creator>CREATOR.CO Video Title Generator</dc:creator>
+  <cp:lastModifiedBy>CREATOR.CO Video Title Generator</cp:lastModifiedBy>
+ </cp:coreProperties>`;
+
+ const appProps=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
+  xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <Application>CREATOR.CO Video Title Generator</Application>
+ </Properties>`;
+
+ const files=[
+   {name:"[Content_Types].xml",data:contentTypes},
+   {name:"_rels/.rels",data:rootRels},
+   {name:"xl/workbook.xml",data:workbookXml},
+   {name:"xl/_rels/workbook.xml.rels",data:workbookRels},
+   {name:"xl/styles.xml",data:stylesXml},
+   {name:"xl/worksheets/sheet1.xml",data:sheetXml},
+   {name:"docProps/core.xml",data:coreProps},
+   {name:"docProps/app.xml",data:appProps}
+ ];
+ const bytes=makeZip(files);
+ const blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=`${safeFilenamePart(v.main)} cluster plan ${downloadDate}.xlsx`;
+ a.style.display="none";
+ document.body.appendChild(a);
+ a.click();
+ setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},500);
+}
+
+
+document.querySelectorAll(".atmo-option").forEach(cb=>{
+ cb.addEventListener("change",updateAtmosphereSelectionUI);
+});
+updateAtmosphereSelectionUI();
+
+$("generate").onclick=()=>run("all");
+$("regenKeywords").onclick=()=>run("keywords");
+$("regenAtmosphere").onclick=()=>run("atmos");
+$("regenTitles").onclick=()=>run("titles");
+$("regenAll").onclick=()=>run("all");
+$("exportSpreadsheet").onclick=exportSpreadsheet;
+$("reset").onclick=()=>{
+ ["cluster","mainKeyword"].forEach(x=>$(x).value="");
+ $("niche").value="";
+ $("useCase").value="";
+ document.querySelectorAll(".atmo-option").forEach(cb=>{cb.checked=false;cb.disabled=false;});
+ updateAtmosphereSelectionUI();
+ $("output").style.display="none";
+ $("placeholder").style.display="block";
+ $("warning").style.display="none";
+ state={keywords:[],moods:[],atmos:[],emotions:[],titles:[]};
+};
+function applyTheme(v){
+ let t=v;if(v==="system")t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+ document.documentElement.setAttribute("data-theme",t);localStorage.setItem("creatorTheme",v)
+}
+$("theme").value=localStorage.getItem("creatorTheme")||"system";applyTheme($("theme").value);$("theme").onchange=e=>applyTheme(e.target.value);
+</script>
+</body>
+</html>
