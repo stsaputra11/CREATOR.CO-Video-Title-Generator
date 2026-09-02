@@ -1,5 +1,5 @@
 
-const CACHE_NAME="creator-co-music-title-generator-v18";
+const CACHE_NAME="creator-co-music-title-generator-v30";
 const APP_ASSETS=[
   "/",
   "/index.html",

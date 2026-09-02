@@ -1,4 +1,22 @@
 
+const selectedVals=["window","city","night"];
+const els={
+ cluster:{value:"Tokyo Rain",style:{}},
+ mainKeyword:{value:"tokyo rain lofi",style:{}},
+ niche:{value:"Lofi",style:{}},
+ useCase:{value:"Study",style:{}},
+ warning:{value:"",style:{},textContent:""},
+ atmoCount:{textContent:"",style:{}}
+};
+globalThis.document={
+ getElementById:(id)=>els[id]||{style:{},value:"",textContent:""},
+ querySelectorAll:(q)=>{
+   if(q===".atmo-option:checked") return selectedVals.map(v=>({value:v,checked:true}));
+   if(q===".atmo-option") return selectedVals.map(v=>({value:v,checked:true,disabled:false,addEventListener:()=>{}}));
+   return [];
+ }
+};
+
 const $=id=>document.getElementById(id);
 let state={keywords:[],moods:[],atmos:[],emotions:[],titles:[],keywordSeed:0,atmosSeed:0};
 
@@ -156,46 +174,6 @@ function addCandidate(list,candidate,selectedNiche,baseCore=""){
 
 
 
-
-function cleanPlainInput(value){
- return String(value||"")
-   .normalize("NFKC")
-   .replace(/[\u200B-\u200D\uFEFF]/g,"")
-   .toLowerCase();
-}
-
-function bindCleanTextInput(id){
- const el=$(id);
- if(!el)return;
-
- // Lowercase while typing, but preserve spaces, punctuation, symbols, and caret position.
- el.addEventListener("input",()=>{
-   const start=typeof el.selectionStart==="number"?el.selectionStart:el.value.length;
-   const end=typeof el.selectionEnd==="number"?el.selectionEnd:el.value.length;
-   const cleaned=cleanPlainInput(el.value);
-   if(el.value!==cleaned){
-     el.value=cleaned;
-     try{el.setSelectionRange(start,end);}catch(e){}
-   }
- });
-
- // Force pasted content to plain text only, without stripping spaces or other characters.
- el.addEventListener("paste",(e)=>{
-   if(!e.clipboardData)return;
-   e.preventDefault();
-
-   const text=cleanPlainInput(e.clipboardData.getData("text/plain"));
-   const start=typeof el.selectionStart==="number"?el.selectionStart:el.value.length;
-   const end=typeof el.selectionEnd==="number"?el.selectionEnd:el.value.length;
-
-   el.value=el.value.slice(0,start)+text+el.value.slice(end);
-
-   const cursor=start+text.length;
-   try{el.setSelectionRange(cursor,cursor);}catch(err){}
-   el.dispatchEvent(new Event("input",{bubbles:true}));
- });
-}
-
 function getSelectedAtmosphereOptions(){
  return Array.from(document.querySelectorAll(".atmo-option:checked")).map(x=>x.value);
 }
@@ -210,8 +188,8 @@ function updateAtmosphereSelectionUI(){
 function validate(){
  const selectedAtmos=getSelectedAtmosphereOptions();
  const vals={
-   cluster:cleanPlainInput($("cluster").value),
-   main:cleanPlainInput($("mainKeyword").value),
+   cluster:$("cluster").value.trim(),
+   main:$("mainKeyword").value.trim(),
    niche:$("niche").value,
    use:$("useCase").value,
    atmosphereOptions:selectedAtmos
@@ -785,7 +763,7 @@ function render(v){
  const atHtml=state.atmos.map((a,i)=>`<div class="atmo">${i+1}. ${a}</div>`).join("");
  const titleHtml=state.titles.slice(1).map((o,i)=>`<div class="title-item"><p><b>${i+2}.</b> ${o.title}</p><div class="title-bottom"><div class="metrics"><span>SEO Score ${o.score}/100 | ${o.len} chars</span></div><button class="copy" onclick='copyText(${JSON.stringify(o.title)},this)'>Copy</button></div></div>`).join("");
  $("output").innerHTML=`
- <div class="card result-card"><div class="kicker" id="keywordAnalysis">Keyword Analysis</div><div class="row-between"><div><h2 class="section-title">${v.main}</h2><p class="section-sub" style="margin:4px 0 0">Topic Cluster: ${v.cluster}</p></div><span class="badge">${v.niche} · ${v.use}</span></div></div>
+ <div class="card result-card"><div class="kicker">Keyword Analysis</div><div class="row-between"><div><h2 class="section-title">${v.main}</h2><p class="section-sub" style="margin:4px 0 0">Topic Cluster: ${v.cluster}</p></div><span class="badge">${v.niche} · ${v.use}</span></div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Related Keywords</div><h2 class="section-title">9 SEO keyword ideas</h2><p class="section-sub" style="margin:4px 0 0">Related keywords may mix genres only within the selected niche group, while blocking overlap with other niche groups.</p></div><button class="copy" onclick='copyText(${JSON.stringify(state.keywords.join(", "))},this)'>Copy Keywords</button></div><div class="keyword-list">${kwHtml}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">AI Mood / Scenario</div><h2 class="section-title">High-intent scenario hooks</h2></div><button class="copy" onclick='copyText(${JSON.stringify(state.moods.join(", "))},this)'>Copy Mood Ideas</button></div><div class="chips">${state.moods.map(x=>`<span class="chip">${sentenceCase(x)}</span>`).join("")}</div></div>
  <div class="card result-card"><div class="kicker">Emotional Keywords</div><div class="chips">${state.emotions.map(x=>`<span class="chip">${x}</span>`).join("")}</div></div>
@@ -795,7 +773,7 @@ function render(v){
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">Main + 9 Related Keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Uses SEO-potential ranking. No fabricated monthly search-volume data.</small></div>
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-   <button class="primary" style="width:100%;grid-column:auto" id="copyAllBtn">Bulk Copy</button>
+   <button class="primary" style="width:100%;grid-column:auto" id="copyAllBtn">Copy All Key Output</button>
    <button class="secondary" style="width:100%" id="exportResultsBtn">Export Spreadsheet (.xlsx)</button>
  </div>
  `;
@@ -805,61 +783,11 @@ function render(v){
  const copyAllBtn = $("copyAllBtn");
  if(copyAllBtn){
    copyAllBtn.onclick = function(){
-     const altTitles=state.titles.slice(1).map((o,i)=>`${i+2}. ${o.title}`).join("\n");
-     const allText =
-       "Recommended Title:\n" +
-       `1. ${best.title}` +
-       "\n\nAlternative Titles:\n" +
-       altTitles +
-       "\n\nMeta Tag Keywords:\n" +
-       meta +
-       "\n\nDescription Hashtags:\n" +
-       hashtags;
+     const allText = best.title + "\n\nMeta Tags:\n" + meta + "\n\nHashtags:\n" + hashtags;
      copyText(allText, copyAllBtn);
    };
  }
 }
-
-function scrollToKeywordAnalysis(){
- // Exact target:
- // <div class="kicker" id="keywordAnalysis">Keyword Analysis</div>
- requestAnimationFrame(()=>{
-   requestAnimationFrame(()=>{
-     const target=document.querySelector('div.kicker#keywordAnalysis');
-     if(!target)return;
-
-     // Detect the sticky header/menu height dynamically.
-     const stickyCandidates=[
-       document.querySelector("header"),
-       document.querySelector(".topbar"),
-       document.querySelector(".app-header"),
-       document.querySelector(".sticky"),
-       document.querySelector('[style*="position:sticky"]')
-     ].filter(Boolean);
-
-     let stickyHeight=0;
-     for(const el of stickyCandidates){
-       const style=getComputedStyle(el);
-       if(style.position==="sticky" || style.position==="fixed"){
-         stickyHeight=Math.max(stickyHeight,el.getBoundingClientRect().height);
-       }
-     }
-
-     // Fallback based on current mobile/desktop header size.
-     if(stickyHeight<40) stickyHeight=112;
-
-     const extraGap=16;
-     const targetTop=target.getBoundingClientRect().top + window.scrollY;
-     const scrollTop=Math.max(0,targetTop-stickyHeight-extraGap);
-
-     window.scrollTo({
-       top:scrollTop,
-       behavior:"smooth"
-     });
-   });
- });
-}
-
 async function run(mode="all"){
  try{
    const v=validate(); if(!v)return;
@@ -913,9 +841,6 @@ async function run(mode="all"){
 
    if(!state.titles.length) throw new Error("No valid titles were generated.");
    render(v);
-
-   // Scroll only after the newly generated output has been mounted.
-   scrollToKeywordAnalysis();
  }catch(err){
    console.error(err);
    showWarn("Generator error: "+(err && err.message ? err.message : "Unknown error"));
@@ -1206,66 +1131,20 @@ function exportSpreadsheet(){
 
 
 
-bindCleanTextInput("cluster");
-bindCleanTextInput("mainKeyword");
+const v=validate();
+generateKeywords(v);
+const kw1=[...state.keywords];
+generateKeywords(v);
+const kw2=[...state.keywords];
 
-document.querySelectorAll(".atmo-option").forEach(cb=>{
- cb.addEventListener("change",updateAtmosphereSelectionUI);
-});
-updateAtmosphereSelectionUI();
+generateAtmos(v);
+const at1=[...state.atmos];
+generateAtmos(v);
+const at2=[...state.atmos];
 
-$("generate").onclick=()=>run("all");
-$("regenKeywords").onclick=()=>run("keywords");
-$("regenAtmosphere").onclick=()=>run("atmos");
-$("regenTitles").onclick=()=>run("titles");
-$("regenAll").onclick=()=>run("all");
-$("reset").onclick=()=>{
- ["cluster","mainKeyword"].forEach(x=>$(x).value="");
- $("niche").value="";
- $("useCase").value="";
- document.querySelectorAll(".atmo-option").forEach(cb=>{cb.checked=false;cb.disabled=false;});
- updateAtmosphereSelectionUI();
- $("output").style.display="none";
- $("placeholder").style.display="block";
- $("warning").style.display="none";
- state={keywords:[],moods:[],atmos:[],emotions:[],titles:[],keywordSeed:0,atmosSeed:0};
-};
-function applyTheme(v){
- let t=v;if(v==="system")t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
- document.documentElement.setAttribute("data-theme",t);localStorage.setItem("creatorTheme",v)
-}
-$("theme").value=localStorage.getItem("creatorTheme")||"system";applyTheme($("theme").value);$("theme").onchange=e=>applyTheme(e.target.value);
-
-let deferredInstallPrompt=null;
-const installBtn=$("installAppBtn");
-
-window.addEventListener("beforeinstallprompt",(e)=>{
- e.preventDefault();
- deferredInstallPrompt=e;
- if(installBtn) installBtn.style.display="inline-block";
-});
-
-if(installBtn){
- installBtn.addEventListener("click",async()=>{
-   if(!deferredInstallPrompt){
-     showWarn("Install belum tersedia. Pastikan manifest.json, sw.js, dan icon PWA berhasil dimuat dari domain ini. Di iPhone/iPad gunakan Safari → Share → Add to Home Screen.");
-     return;
-   }
-   deferredInstallPrompt.prompt();
-   try{ await deferredInstallPrompt.userChoice; }catch(e){}
-   deferredInstallPrompt=null;
-   installBtn.style.display="none";
- });
-}
-
-window.addEventListener("appinstalled",()=>{
- deferredInstallPrompt=null;
- if(installBtn) installBtn.style.display="none";
-});
-
-if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost" || location.hostname==="127.0.0.1")){
- window.addEventListener("load",()=>{
-   navigator.serviceWorker.register("/sw.js").catch(err=>console.warn("Service worker registration failed:",err));
- });
-}
-
+console.log("keywordsChanged", JSON.stringify(kw1)!==JSON.stringify(kw2));
+console.log("atmosChanged", JSON.stringify(at1)!==JSON.stringify(at2));
+console.log("kw1",JSON.stringify(kw1));
+console.log("kw2",JSON.stringify(kw2));
+console.log("at1",JSON.stringify(at1));
+console.log("at2",JSON.stringify(at2));

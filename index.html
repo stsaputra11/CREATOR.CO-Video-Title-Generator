@@ -65,9 +65,41 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
 @media(max-width:620px){.header-inner{padding:15px}.brand p{display:none}main{padding:15px}.keyword-list,.atmo-list{grid-template-columns:1fr}.title-text{font-size:18px}.actions{grid-template-columns:1fr}.secondary,.danger,.primary{grid-column:1}}
 
 .checkbox-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:320px;overflow:auto;padding:4px}
-.check-item{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:9px 10px;font-size:12px;cursor:pointer}
-.check-item input{width:auto;margin:0;accent-color:var(--accent)}
-.check-item span{line-height:1.25}
+.field label.check-item{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:flex-start;
+  gap:12px;
+  margin:0;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+.field label.check-item input.atmo-option{
+  display:block;
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  min-width:16px;
+  max-width:16px;
+  margin:0;
+  padding:0;
+  accent-color:var(--accent);
+}
+.field label.check-item span{
+  display:block;
+  flex:1 1 auto;
+  min-width:0;
+  margin:0;
+  padding:0;
+  line-height:16px;
+  text-align:left;
+}
 .check-note{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px;margin-top:7px}
 @media(max-width:620px){.checkbox-grid{grid-template-columns:1fr}}
 
@@ -76,6 +108,18 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
 .theme-select select option{background:var(--panel);color:var(--text)}
 html[data-theme="dark"] .theme-select select option{background:#14171f;color:#f4f6fb}
 html[data-theme="light"] .theme-select select option{background:#ffffff;color:#151821}
+
+
+.actions .reset-center{
+  grid-column:1 / -1;
+  justify-self:center;
+  width:min(260px,100%);
+}
+
+
+#keywordAnalysis{
+  scroll-margin-top:140px;
+}
 
 </style>
 
@@ -103,8 +147,8 @@ html[data-theme="light"] .theme-select select option{background:#ffffff;color:#1
     <h2 class="section-title">Video SEO Input</h2>
     <p class="section-sub">Masukkan fondasi topik untuk membuat keyword cluster dan judul video.</p>
     <div id="warning" class="warnbox"></div>
-    <div class="field"><label>Cluster *</label><input id="cluster" placeholder="Example: Tokyo Rain Lofi"><small>Topik utama untuk mengelompokkan konten dalam satu SEO cluster.</small></div>
-    <div class="field"><label>Main Keyword *</label><input id="mainKeyword" placeholder="Example: Tokyo Rain Lofi"><small>Keyword utama yang ingin ditargetkan.</small></div>
+    <div class="field"><label>Cluster *</label><input id="cluster" placeholder="example: tokyo rain lofi"><small>Topik utama untuk mengelompokkan konten dalam satu SEO cluster.</small></div>
+    <div class="field"><label>Main Keyword *</label><input id="mainKeyword" placeholder="example: tokyo rain lofi"><small>Keyword utama yang ingin ditargetkan.</small></div>
     <div class="field"><label>Niche *</label><select id="niche">
       <option value="">Select Niche</option>
       <option>Lofi</option>
@@ -130,8 +174,7 @@ html[data-theme="light"] .theme-select select option{background:#ffffff;color:#1
       <button class="secondary" id="regenAtmosphere">Regenerate Atmosphere</button>
       <button class="secondary" id="regenTitles">Regenerate Titles</button>
       <button class="secondary" id="regenAll">Regenerate All</button>
-      <button class="secondary" id="exportSpreadsheet">Export Spreadsheet</button>
-      <button class="danger" id="reset">Reset</button>
+      <button class="danger reset-center" id="reset">Reset</button>
     </div>
   </aside>
 
@@ -146,7 +189,7 @@ html[data-theme="light"] .theme-select select option{background:#ffffff;color:#1
 
 <script>
 const $=id=>document.getElementById(id);
-let state={keywords:[],moods:[],atmos:[],emotions:[],titles:[]};
+let state={keywords:[],moods:[],atmos:[],emotions:[],titles:[],keywordSeed:0,atmosSeed:0};
 
 const presets={
   lofi:["rainy {x}","{x} ambience","{x} study music","relaxing {x}","{x} night vibes","cozy {x}","{x} beats","{x} background music","chill {x}"],
@@ -175,6 +218,12 @@ function cleanCore(k){
 function titleCase(s){return s.replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase())}
 function unique(arr){return [...new Set(arr.map(x=>x.trim()).filter(Boolean))]}
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function rotateArray(arr,seed){
+ const a=[...arr];
+ if(!a.length)return a;
+ const n=((seed%a.length)+a.length)%a.length;
+ return a.slice(n).concat(a.slice(0,n));
+}
 
 const stopTokens = new Set(["the","a","an","for","with","and","of","in","on","to"]);
 const semanticGroups = [
@@ -296,6 +345,46 @@ function addCandidate(list,candidate,selectedNiche,baseCore=""){
 
 
 
+
+function cleanPlainInput(value){
+ return String(value||"")
+   .normalize("NFKC")
+   .replace(/[\u200B-\u200D\uFEFF]/g,"")
+   .toLowerCase();
+}
+
+function bindCleanTextInput(id){
+ const el=$(id);
+ if(!el)return;
+
+ // Lowercase while typing, but preserve spaces, punctuation, symbols, and caret position.
+ el.addEventListener("input",()=>{
+   const start=typeof el.selectionStart==="number"?el.selectionStart:el.value.length;
+   const end=typeof el.selectionEnd==="number"?el.selectionEnd:el.value.length;
+   const cleaned=cleanPlainInput(el.value);
+   if(el.value!==cleaned){
+     el.value=cleaned;
+     try{el.setSelectionRange(start,end);}catch(e){}
+   }
+ });
+
+ // Force pasted content to plain text only, without stripping spaces or other characters.
+ el.addEventListener("paste",(e)=>{
+   if(!e.clipboardData)return;
+   e.preventDefault();
+
+   const text=cleanPlainInput(e.clipboardData.getData("text/plain"));
+   const start=typeof el.selectionStart==="number"?el.selectionStart:el.value.length;
+   const end=typeof el.selectionEnd==="number"?el.selectionEnd:el.value.length;
+
+   el.value=el.value.slice(0,start)+text+el.value.slice(end);
+
+   const cursor=start+text.length;
+   try{el.setSelectionRange(cursor,cursor);}catch(err){}
+   el.dispatchEvent(new Event("input",{bubbles:true}));
+ });
+}
+
 function getSelectedAtmosphereOptions(){
  return Array.from(document.querySelectorAll(".atmo-option:checked")).map(x=>x.value);
 }
@@ -310,8 +399,8 @@ function updateAtmosphereSelectionUI(){
 function validate(){
  const selectedAtmos=getSelectedAtmosphereOptions();
  const vals={
-   cluster:$("cluster").value.trim(),
-   main:$("mainKeyword").value.trim(),
+   cluster:cleanPlainInput($("cluster").value),
+   main:cleanPlainInput($("mainKeyword").value),
    niche:$("niche").value,
    use:$("useCase").value,
    atmosphereOptions:selectedAtmos
@@ -548,7 +637,9 @@ function generateKeywords(v){
    ["cozy rain ambience",`rainy room ${variants[0]}`,"cozy rainy night","window rain ambience"].forEach(x=>pool.unshift(x));
  }
 
- for(const c of pool) addCandidate(out,c,v.niche,joined);
+ const variedPool=rotateArray(pool,state.keywordSeed);
+ state.keywordSeed++;
+ for(const c of variedPool) addCandidate(out,c,v.niche,joined);
 
  const safeFallback=[
    maybePhrase(`${joined}`,`mood`),
@@ -558,12 +649,29 @@ function generateKeywords(v){
    maybePhrase(`${joined}`,`night vibes`),
    maybePhrase(`${joined}`,`focus music`)
  ];
- for(const c of safeFallback){
+ for(const c of rotateArray(safeFallback,state.keywordSeed)){
    if(out.length>=9) break;
    addCandidate(out,c,v.niche,joined);
  }
 
- state.keywords=out.slice(0,9);
+ // Add secondary variants to ensure regenerate can produce a genuinely different set.
+ const secondary=[
+   `${joined} playlist`,
+   `${joined} session`,
+   `${joined} mix`,
+   `${joined} background`,
+   `${joined} study`,
+   `${joined} focus`,
+   `${joined} night`,
+   `${joined} relaxing`,
+   `${joined} cozy`
+ ];
+ for(const c of rotateArray(secondary,state.keywordSeed+3)){
+   if(out.length>=12) break;
+   addCandidate(out,c,v.niche,joined);
+ }
+
+ state.keywords=rotateArray(out,state.keywordSeed).slice(0,9);
 }
 
 function sentenceCase(s){
@@ -739,7 +847,10 @@ function generateAtmos(v){
      "golden hour":["soft golden hour ambience","warm golden hour mood","peaceful golden light"],
      "evening":["calm evening ambience","soft evening atmosphere","peaceful evening mood"]
    };
-   (map[opt] || [`${opt} ambience`, `quiet ${opt}`, `calm ${opt} atmosphere`]).forEach(push);
+   rotateArray(
+     map[opt] || [`${opt} ambience`, `quiet ${opt}`, `calm ${opt} atmosphere`],
+     state.atmosSeed
+   ).forEach(push);
 
    // Context refinement for the same selected option only.
    if(hasCtx("rain")){
@@ -772,7 +883,8 @@ function generateAtmos(v){
  }
 
  // Build phrases independently for each chosen option.
- selected.forEach(opt=>{
+ const selectedOrder=rotateArray(selected,state.atmosSeed);
+ selectedOrder.forEach(opt=>{
    phrasesForOption(opt).forEach(add);
  });
 
@@ -784,7 +896,8 @@ function generateAtmos(v){
    add(`quiet ${opt} ambience`);
  });
 
- state.atmos=candidates.slice(0,10);
+ state.atmosSeed++;
+ state.atmos=rotateArray(candidates,state.atmosSeed).slice(0,10);
 }
 function usePhrase(u){return u==="Relax"?"Relaxation":u}
 function scoreTitle(t,v){
@@ -861,7 +974,7 @@ function render(v){
  const atHtml=state.atmos.map((a,i)=>`<div class="atmo">${i+1}. ${a}</div>`).join("");
  const titleHtml=state.titles.slice(1).map((o,i)=>`<div class="title-item"><p><b>${i+2}.</b> ${o.title}</p><div class="title-bottom"><div class="metrics"><span>SEO Score ${o.score}/100 | ${o.len} chars</span></div><button class="copy" onclick='copyText(${JSON.stringify(o.title)},this)'>Copy</button></div></div>`).join("");
  $("output").innerHTML=`
- <div class="card result-card"><div class="kicker">Keyword Analysis</div><div class="row-between"><div><h2 class="section-title">${v.main}</h2><p class="section-sub" style="margin:4px 0 0">Topic Cluster: ${v.cluster}</p></div><span class="badge">${v.niche} · ${v.use}</span></div></div>
+ <div class="card result-card"><div class="kicker" id="keywordAnalysis">Keyword Analysis</div><div class="row-between"><div><h2 class="section-title">${v.main}</h2><p class="section-sub" style="margin:4px 0 0">Topic Cluster: ${v.cluster}</p></div><span class="badge">${v.niche} · ${v.use}</span></div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Related Keywords</div><h2 class="section-title">9 SEO keyword ideas</h2><p class="section-sub" style="margin:4px 0 0">Related keywords may mix genres only within the selected niche group, while blocking overlap with other niche groups.</p></div><button class="copy" onclick='copyText(${JSON.stringify(state.keywords.join(", "))},this)'>Copy Keywords</button></div><div class="keyword-list">${kwHtml}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">AI Mood / Scenario</div><h2 class="section-title">High-intent scenario hooks</h2></div><button class="copy" onclick='copyText(${JSON.stringify(state.moods.join(", "))},this)'>Copy Mood Ideas</button></div><div class="chips">${state.moods.map(x=>`<span class="chip">${sentenceCase(x)}</span>`).join("")}</div></div>
  <div class="card result-card"><div class="kicker">Emotional Keywords</div><div class="chips">${state.emotions.map(x=>`<span class="chip">${x}</span>`).join("")}</div></div>
@@ -871,7 +984,7 @@ function render(v){
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">Main + 9 Related Keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Uses SEO-potential ranking. No fabricated monthly search-volume data.</small></div>
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-   <button class="primary" style="width:100%;grid-column:auto" id="copyAllBtn">Copy All Key Output</button>
+   <button class="primary" style="width:100%;grid-column:auto" id="copyAllBtn">Bulk Copy</button>
    <button class="secondary" style="width:100%" id="exportResultsBtn">Export Spreadsheet (.xlsx)</button>
  </div>
  `;
@@ -881,30 +994,117 @@ function render(v){
  const copyAllBtn = $("copyAllBtn");
  if(copyAllBtn){
    copyAllBtn.onclick = function(){
-     const allText = best.title + "\n\nMeta Tags:\n" + meta + "\n\nHashtags:\n" + hashtags;
+     const altTitles=state.titles.slice(1).map((o,i)=>`${i+2}. ${o.title}`).join("\n");
+     const allText =
+       "Recommended Title:\n" +
+       `1. ${best.title}` +
+       "\n\nAlternative Titles:\n" +
+       altTitles +
+       "\n\nMeta Tag Keywords:\n" +
+       meta +
+       "\n\nDescription Hashtags:\n" +
+       hashtags;
      copyText(allText, copyAllBtn);
    };
  }
 }
+
+function scrollToKeywordAnalysis(){
+ // Exact target:
+ // <div class="kicker" id="keywordAnalysis">Keyword Analysis</div>
+ requestAnimationFrame(()=>{
+   requestAnimationFrame(()=>{
+     const target=document.querySelector('div.kicker#keywordAnalysis');
+     if(!target)return;
+
+     // Detect the sticky header/menu height dynamically.
+     const stickyCandidates=[
+       document.querySelector("header"),
+       document.querySelector(".topbar"),
+       document.querySelector(".app-header"),
+       document.querySelector(".sticky"),
+       document.querySelector('[style*="position:sticky"]')
+     ].filter(Boolean);
+
+     let stickyHeight=0;
+     for(const el of stickyCandidates){
+       const style=getComputedStyle(el);
+       if(style.position==="sticky" || style.position==="fixed"){
+         stickyHeight=Math.max(stickyHeight,el.getBoundingClientRect().height);
+       }
+     }
+
+     // Fallback based on current mobile/desktop header size.
+     if(stickyHeight<40) stickyHeight=112;
+
+     const extraGap=16;
+     const targetTop=target.getBoundingClientRect().top + window.scrollY;
+     const scrollTop=Math.max(0,targetTop-stickyHeight-extraGap);
+
+     window.scrollTo({
+       top:scrollTop,
+       behavior:"smooth"
+     });
+   });
+ });
+}
+
 async function run(mode="all"){
  try{
    const v=validate(); if(!v)return;
    $("placeholder").style.display="none";
    $("output").style.display="none";
    $("loading").style.display="block";
-   $("loadingText").textContent=mode==="titles"?"Generating Titles...":"Analyzing SEO Keywords...";
-   await new Promise(r=>setTimeout(r,250));
 
-   if(mode==="titles" && (!state.keywords.length || !state.atmos.length || !state.emotions.length)){
-     generateKeywords(v); generateMoods(v); generateEmotions(v); generateAtmos(v);
+   const labels={
+     all:"Regenerating all SEO data...",
+     keywords:"Regenerating related keywords...",
+     atmos:"Regenerating atmosphere / vibes...",
+     titles:"Regenerating titles..."
+   };
+   $("loadingText").textContent=labels[mode]||"Generating...";
+
+   await new Promise(r=>setTimeout(r,180));
+
+   if(mode==="all"){
+     generateKeywords(v);
+     generateMoods(v);
+     generateEmotions(v);
+     generateAtmos(v);
+     generateTitles(v);
    }
-   if(mode==="keywords"){ generateKeywords(v); generateMoods(v); generateEmotions(v); if(!state.atmos.length)generateAtmos(v); }
-   if(mode==="atmos"){ generateAtmos(v); if(!state.keywords.length)generateKeywords(v); if(!state.moods.length)generateMoods(v); if(!state.emotions.length)generateEmotions(v); }
-   if(mode==="all"){ generateKeywords(v); generateMoods(v); generateEmotions(v); generateAtmos(v); }
+   else if(mode==="keywords"){
+     // Regenerate keywords and everything that depends on keyword context.
+     generateKeywords(v);
+     generateMoods(v);
+     generateEmotions(v);
+     generateAtmos(v);
+     generateTitles(v);
+   }
+   else if(mode==="atmos"){
+     // Keep current keyword set, but regenerate atmosphere and dependent titles.
+     if(!state.keywords.length){
+       generateKeywords(v);
+       generateMoods(v);
+       generateEmotions(v);
+     }
+     generateAtmos(v);
+     generateTitles(v);
+   }
+   else if(mode==="titles"){
+     // Keep keywords & atmosphere; only rebuild title combinations.
+     if(!state.keywords.length) generateKeywords(v);
+     if(!state.moods.length) generateMoods(v);
+     if(!state.emotions.length) generateEmotions(v);
+     if(!state.atmos.length) generateAtmos(v);
+     generateTitles(v);
+   }
 
-   generateTitles(v);
    if(!state.titles.length) throw new Error("No valid titles were generated.");
    render(v);
+
+   // Scroll only after the newly generated output has been mounted.
+   scrollToKeywordAnalysis();
  }catch(err){
    console.error(err);
    showWarn("Generator error: "+(err && err.message ? err.message : "Unknown error"));
@@ -1194,6 +1394,10 @@ function exportSpreadsheet(){
 }
 
 
+
+bindCleanTextInput("cluster");
+bindCleanTextInput("mainKeyword");
+
 document.querySelectorAll(".atmo-option").forEach(cb=>{
  cb.addEventListener("change",updateAtmosphereSelectionUI);
 });
@@ -1204,7 +1408,6 @@ $("regenKeywords").onclick=()=>run("keywords");
 $("regenAtmosphere").onclick=()=>run("atmos");
 $("regenTitles").onclick=()=>run("titles");
 $("regenAll").onclick=()=>run("all");
-$("exportSpreadsheet").onclick=exportSpreadsheet;
 $("reset").onclick=()=>{
  ["cluster","mainKeyword"].forEach(x=>$(x).value="");
  $("niche").value="";
@@ -1214,7 +1417,7 @@ $("reset").onclick=()=>{
  $("output").style.display="none";
  $("placeholder").style.display="block";
  $("warning").style.display="none";
- state={keywords:[],moods:[],atmos:[],emotions:[],titles:[]};
+ state={keywords:[],moods:[],atmos:[],emotions:[],titles:[],keywordSeed:0,atmosSeed:0};
 };
 function applyTheme(v){
  let t=v;if(v==="system")t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
