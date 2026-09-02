@@ -31,3 +31,12 @@ Safari does not rely on the Chromium beforeinstallprompt flow. Use Share → Add
 - PWA 512x512 icon replaced.
 - Apple touch icon uses the CREATOR.CO logo.
 - Service worker cache version bumped so the new icon is refreshed after redeploy.
+
+
+## v18 UI / Branding Update
+- Fixed theme dropdown option contrast in dark mode.
+- App name: CREATOR.CO - Music Video Title Generator
+- Description: Generator Judul Video Musik dengan Topik Cluster Berbasis SEO
+- Footer: © 2026 Created by Santanu Saputra
+- PWA manifest metadata updated.
+- Service worker cache bumped to v18.

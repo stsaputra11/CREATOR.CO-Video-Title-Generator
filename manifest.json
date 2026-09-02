@@ -1,7 +1,7 @@
 {
-  "name": "CREATOR.CO Video Title Generator",
+  "name": "CREATOR.CO - Music Video Title Generator",
   "short_name": "CREATOR.CO",
-  "description": "Buat judul video SEO-friendly berbasis topic cluster, niche, related keywords, mood, dan atmosphere.",
+  "description": "Generator Judul Video Musik dengan Topik Cluster Berbasis SEO",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

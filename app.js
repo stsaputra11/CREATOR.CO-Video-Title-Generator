@@ -1015,14 +1015,14 @@ function exportSpreadsheet(){
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:dcmitype="http://purl.org/dc/dcmitype/"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <dc:creator>CREATOR.CO Video Title Generator</dc:creator>
-  <cp:lastModifiedBy>CREATOR.CO Video Title Generator</cp:lastModifiedBy>
+  <dc:creator>CREATOR.CO - Music Video Title Generator</dc:creator>
+  <cp:lastModifiedBy>CREATOR.CO - Music Video Title Generator</cp:lastModifiedBy>
  </cp:coreProperties>`;
 
  const appProps=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
  <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
   xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
-  <Application>CREATOR.CO Video Title Generator</Application>
+  <Application>CREATOR.CO - Music Video Title Generator</Application>
  </Properties>`;
 
  const files=[
@@ -1088,7 +1088,7 @@ window.addEventListener("beforeinstallprompt",(e)=>{
 if(installBtn){
  installBtn.addEventListener("click",async()=>{
    if(!deferredInstallPrompt){
-     showWarn("Install prompt is available only when the app is opened over HTTPS or localhost in a supported browser.");
+     showWarn("Install belum tersedia. Pastikan manifest.json, sw.js, dan icon PWA berhasil dimuat dari domain ini. Di iPhone/iPad gunakan Safari → Share → Add to Home Screen.");
      return;
    }
    deferredInstallPrompt.prompt();
@@ -1105,7 +1105,7 @@ window.addEventListener("appinstalled",()=>{
 
 if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost" || location.hostname==="127.0.0.1")){
  window.addEventListener("load",()=>{
-   navigator.serviceWorker.register("./sw.js").catch(err=>console.warn("Service worker registration failed:",err));
+   navigator.serviceWorker.register("/sw.js").catch(err=>console.warn("Service worker registration failed:",err));
  });
 }
 
