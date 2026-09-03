@@ -133,3 +133,10 @@ Root cause fixed:
 - Added a 16px visual gap below the sticky menu.
 - Added a 140px `scroll-margin-top` fallback for browsers/layouts where header detection differs.
 - Applies to Generate and all Regenerate actions because scrolling still happens after render.
+
+
+## v31 Atmosphere Update
+- Added `rain` to Atmosphere / Vibes.
+- Minimum selection is now 1 option.
+- Maximum selection remains 5 options.
+- Added dedicated rain atmosphere phrases.

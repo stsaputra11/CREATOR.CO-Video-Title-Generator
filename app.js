@@ -225,8 +225,8 @@ function validate(){
    showWarn("Please complete: "+missing.join(", ")+".");
    return null;
  }
- if(selectedAtmos.length<3){
-   showWarn("Please select at least 3 Atmosphere / Vibes options.");
+ if(selectedAtmos.length<1){
+   showWarn("Please select at least 1 Atmosphere / Vibes option.");
    return null;
  }
  if(selectedAtmos.length>5){
@@ -652,6 +652,8 @@ function generateAtmos(v){
      "lakeside":["peaceful lakeside ambience","quiet lakeside atmosphere","soft lakeside mood"],
      "seaside":["peaceful seaside ambience","soft seaside atmosphere","calm seaside mood"],
      "ocean":["peaceful ocean ambience","soft ocean atmosphere","calm ocean mood"],
+     "rain":["gentle rain ambience","soft rainfall atmosphere","calm rainy mood","rainy background ambience","peaceful rain sounds"],
+
      "night":["quiet night ambience","soft nighttime atmosphere","calm late-night mood"],
      "early morning":["calm early morning ambience","soft early morning mood","peaceful dawn atmosphere"],
      "morning":["calm morning ambience","soft morning atmosphere","peaceful morning mood"],
