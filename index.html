@@ -30,9 +30,9 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
 <style>
-:root{
+:root{--accent-gradient:linear-gradient(135deg,#bf3b3b 0%,#4e278c 100%);--accent-gradient-hover:linear-gradient(135deg,#a83232 0%,#3f1f73 100%);
   --bg:#f6f7fb;--panel:#ffffff;--panel2:#f0f2f7;--text:#151821;--muted:#687083;
-  --border:#dfe3ea;--accent:#6c5ce7;--accent2:#8e7dff;--good:#15a36d;--warn:#d99100;
+  --border:#dfe3ea;--accent:#bf3b3b;--accent2:#4e278c;--good:#15a36d;--warn:#d99100;
   --shadow:0 16px 40px rgba(20,25,45,.08)
 }
 html[data-theme="dark"]{
@@ -141,10 +141,51 @@ html[data-theme="light"] .theme-select select option{background:#ffffff;color:#1
   scroll-margin-top:140px;
 }
 
+
+.primary,
+button.primary,
+#generate,
+#copyAllBtn,
+#installAppBtn{
+  background:var(--accent-gradient) !important;
+  border-color:transparent !important;
+  color:#fff !important;
+}
+.primary:hover,
+button.primary:hover,
+#generate:hover,
+#copyAllBtn:hover,
+#installAppBtn:hover{
+  background:var(--accent-gradient-hover) !important;
+}
+.primary:focus-visible,
+button.primary:focus-visible,
+#generate:focus-visible,
+#copyAllBtn:focus-visible,
+#installAppBtn:focus-visible{
+  outline:3px solid rgba(191,59,59,.22);
+  outline-offset:2px;
+}
+
+/* App accent treatments */
+.badge,
+.kicker{
+  color:#bf3b3b;
+}
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:#bf3b3b !important;
+  box-shadow:0 0 0 3px rgba(191,59,59,.12);
+}
+.atmo-option{
+  accent-color:#7f3264 !important;
+}
+
 </style>
 
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#6c5ce7">
+<meta name="theme-color" content="#4e278c">
 <meta name="application-name" content="CREATOR.CO - Music Video Title Generator">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">

@@ -173,3 +173,10 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - `og:url` updated to the same URL.
 - `hreflang="id"` updated to the same URL.
 - Open Graph and Twitter image URLs updated to the new domain.
+
+
+## v36 Visual Accent Update
+- Primary button gradient: `#bf3b3b → #4e278c`
+- Application accent updated to the same red-to-purple gradient family.
+- Focus, badge, checkbox, and theme accent treatments updated for consistency.
+- PWA theme color updated to `#4e278c`.
