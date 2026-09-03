@@ -150,3 +150,12 @@ Root cause fixed:
 - Social preview image uses `/icons/icon-512.png`.
 
 Note: after a final custom domain is chosen, replacing relative canonical/OG URLs with absolute URLs is recommended for strongest SEO/social compatibility.
+
+
+## v33 SEO Revision
+- Meta description updated to:
+  `CREATOR.CO - Music Video Title Generator, buat judul dan topik cluster untuk video musik channel Youtube jadi lebih praktis.`
+- Canonical URL set to:
+  `https://creator-co-video-title-generator.vercel.app`
+- Open Graph URL updated to canonical.
+- Open Graph and Twitter images now use absolute URLs.
