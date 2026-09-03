@@ -140,3 +140,13 @@ Root cause fixed:
 - Minimum selection is now 1 option.
 - Maximum selection remains 5 options.
 - Added dedicated rain atmosphere phrases.
+
+
+## v32 SEO Metadata
+- Added meta description: `Generator Judul Video Musik dengan Topik Cluster Berbasis SEO`
+- Added canonical URL using root path `/`.
+- Added Open Graph metadata for social sharing.
+- Added Twitter Card metadata.
+- Social preview image uses `/icons/icon-512.png`.
+
+Note: after a final custom domain is chosen, replacing relative canonical/OG URLs with absolute URLs is recommended for strongest SEO/social compatibility.
