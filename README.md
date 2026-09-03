@@ -159,3 +159,10 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
   `https://creator-co-video-title-generator.vercel.app`
 - Open Graph URL updated to canonical.
 - Open Graph and Twitter images now use absolute URLs.
+
+
+## v34 SEO Metadata Additions
+- Meta keywords: `ai video title generator, topic content clustering`
+- Publisher: `Santanu Saputra`
+- hreflang: `id`
+- HTML document language: `id`
