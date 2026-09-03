@@ -166,3 +166,10 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Publisher: `Santanu Saputra`
 - hreflang: `id`
 - HTML document language: `id`
+
+
+## v35 Canonical Revision
+- Canonical URL updated to `https://creator-co.vercel.app/`
+- `og:url` updated to the same URL.
+- `hreflang="id"` updated to the same URL.
+- Open Graph and Twitter image URLs updated to the new domain.
