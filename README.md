@@ -228,3 +228,15 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Root cause fixed: global `.primary { grid-column:1/-1 }` made Bulk Copy span both columns.
 - Desktop: Bulk Copy and Export (.xlsx) now sit side-by-side at equal width.
 - Tablet/mobile ≤900px: buttons stack vertically at 100% width.
+
+
+## v44 Install App Button Accent Fix
+- Install App now follows the primary app gradient `#604de6 → #4ac0bb`.
+- Hover/focus states match the main button accent system.
+- Theme selector styling remains unchanged.
+
+
+## v45 Permanent Theme Dropdown Contrast Fix
+- Theme dropdown options now always use dark text on a white option surface.
+- Closed dropdown control still follows Light/Dark/System app theme.
+- Rules are isolated from accent-color changes so future visual updates won't reintroduce the bug.

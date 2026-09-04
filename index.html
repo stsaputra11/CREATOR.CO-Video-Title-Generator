@@ -169,6 +169,47 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
   }
 }
 
+
+/* v44 Install App button accent */
+#installAppBtn{
+  background:var(--accent-gradient) !important;
+  border-color:transparent !important;
+  color:#fff !important;
+}
+#installAppBtn:hover{
+  background:var(--accent-gradient-hover) !important;
+}
+#installAppBtn:focus-visible{
+  outline:3px solid rgba(96,77,230,.22) !important;
+  outline-offset:2px;
+}
+
+
+/* v45 permanent theme dropdown contrast fix */
+.theme-select select{
+  background:var(--panel);
+  color:var(--text);
+  border:0;
+  outline:0;
+}
+
+/* Native dropdown popup options often render on a light system surface.
+   Keep option text dark in all app themes so it always remains readable. */
+.theme-select select option{
+  background:#ffffff !important;
+  color:#151821 !important;
+}
+
+/* Selected closed control still follows the active app theme. */
+html[data-theme="dark"] .theme-select select{
+  background:var(--panel);
+  color:var(--text);
+}
+html[data-theme="light"] .theme-select select{
+  background:var(--panel);
+  color:var(--text);
+}
+
 </style>
 
 <link rel="manifest" href="/manifest.json">
