@@ -398,3 +398,8 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Original user-provided CREATOR.CO icon is preserved exactly.
 - PWA/favicon icon file remains included in /icons.
 - Service worker cache bumped to v70.
+
+## v71 Validation Auto-scroll
+- When Generate is clicked with incomplete required fields, the app now auto-scrolls to Video SEO Input.
+- Atmosphere validation failures also auto-scroll to the same warning area.
+- Sticky-header-safe offset behavior is preserved.

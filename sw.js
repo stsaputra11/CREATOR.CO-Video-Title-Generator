@@ -1,4 +1,4 @@
-const CACHE_NAME="creator-co-music-title-generator-v70";
+const CACHE_NAME="creator-co-music-title-generator-v71";
 const APP_SHELL=[
   "/",
   "/index.html",
