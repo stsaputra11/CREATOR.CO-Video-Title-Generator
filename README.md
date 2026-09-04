@@ -374,3 +374,11 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Candidates longer than 4 words are rejected before ranking.
 - A final safety filter enforces the same limit before output.
 - Main Keyword is included only if it is 4 words or fewer.
+
+## v67 PWA Theme Color Repair
+- Restored missing manifest.json and sw.js.
+- Android/PWA theme color: #4ac0bb.
+- HTML meta theme-color synchronized to #4ac0bb.
+- Service worker cache version bumped to v67.
+- Restored required PWA icon files and Vercel headers.
+- Android status bars do not support CSS gradients; the teal endpoint of the app gradient is used as the solid system color.

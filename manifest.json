@@ -1,13 +1,13 @@
 {
+  "id": "/",
   "name": "CREATOR.CO - Music Video Title Generator",
   "short_name": "CREATOR.CO",
-  "description": "Generator Judul Video Musik dengan Topik Cluster Berbasis SEO",
+  "description": "Music Video Title Generator and Topic Cluster",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4e278c",
-  "orientation": "any",
+  "background_color": "#111a1f",
+  "theme_color": "#4ac0bb",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -27,6 +27,5 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "id": "/"
+  ]
 }

@@ -1,11 +1,13 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/manifest.json",
       "headers": [
         {
           "key": "Content-Type",
-          "value": "application/manifest+json; charset=utf-8"
+          "value": "application/manifest+json"
         }
       ]
     },
