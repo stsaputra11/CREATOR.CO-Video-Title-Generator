@@ -1,12 +1,6 @@
 
 function primaryUseCase(useValue){
- const s=String(useValue||"");
- if(s.startsWith("Study /")) return "Study";
- if(s.startsWith("Work /")) return "Work";
- if(s.startsWith("Relax /")) return "Relax";
- if(s.startsWith("Sleep /")) return "Sleep";
- if(s.startsWith("Spa /")) return "Spa";
- return s.split(" / ")[0] || s;
+ return String(useValue||"");
 }
 
 
@@ -152,6 +146,45 @@ function normalizeKeywordKey(value){
    .trim();
 }
 
+
+
+
+
+const ACTIVITY_CONTEXT_GROUPS={
+ sleep:["sleep","sleeping","deep sleep","fall asleep","bedtime"],
+ focus:["focus","focused","deep focus","concentration","concentrate"],
+ study:["study","studying","reading","writing"],
+ work:["work","working","productivity","productive"]
+};
+
+const INCOMPATIBLE_ACTIVITY_CONTEXTS=[
+ ["sleep","focus"],
+ ["sleep","study"],
+ ["sleep","work"]
+];
+
+function normalizeActivityContext(value){
+ return String(value||"")
+   .normalize("NFKC")
+   .toLowerCase()
+   .replace(/[_–—-]+/g," ")
+   .replace(/\s+/g," ")
+   .trim();
+}
+
+function phraseHasActivityContext(text,groupName){
+ const normalized=" "+normalizeActivityContext(text)+" ";
+ return (ACTIVITY_CONTEXT_GROUPS[groupName]||[]).some(term=>
+   normalized.includes(" "+normalizeActivityContext(term)+" ")
+ );
+}
+
+function hasOpposingActivityContexts(text){
+ return INCOMPATIBLE_ACTIVITY_CONTEXTS.some(([a,b])=>
+   phraseHasActivityContext(text,a) && phraseHasActivityContext(text,b)
+ );
+}
+
 function addCandidate(list,candidate,selectedNiche,baseCore="",mainKeyword=""){
  let c=stripRepeatedConcepts(candidate);
  c=normalizePhrase(c);
@@ -172,6 +205,7 @@ function addCandidate(list,candidate,selectedNiche,baseCore="",mainKeyword=""){
  const mainKey=normalizeKeywordKey(mainKeyword);
 
  if(!candidateKey) return;
+ if(hasOpposingActivityContexts(c)) return;
  if(mainKey && candidateKey===mainKey) return;
  if(!isNaturalKeyword(c)) return;
  if(selectedNiche && containsOtherNicheTerm(c,selectedNiche)) return;
@@ -342,6 +376,18 @@ function baseTopicParts(v){
  return {main,niche,core,words};
 }
 
+
+function useCaseKeywordTerms(useCase){
+ const map={
+   Study:["study","reading","writing"],
+   Work:["work","productivity"],
+   Relax:["relax","calm","stress relief"],
+   Focus:["focus","deep focus","concentration"],
+   Sleep:["sleep","deep sleep","bedtime"]
+ };
+ return map[useCase] || [];
+}
+
 function generateKeywords(v){
  const {main,niche,core}=baseTopicParts(v);
  const out=[];
@@ -349,6 +395,7 @@ function generateKeywords(v){
  const has=(w)=>joined.includes(w);
  const variants=selectedNicheDisplayVariants(v);
  const baseSig=new Set(tokenSignature(joined));
+ const useCaseTerms=useCaseKeywordTerms(v.use);
  let pool=[];
 
  function maybePhrase(stem, addon){
@@ -456,6 +503,15 @@ function generateKeywords(v){
    ].forEach(addPool);
  }
 
+
+ if(useCaseTerms.length){
+   [
+     maybePhrase(`${joined}`,useCaseTerms[0]),
+     maybePhrase(`${joined}`,useCaseTerms[1] || useCaseTerms[0]),
+     maybePhrase(`${joined}`,useCaseTerms[2] || useCaseTerms[0])
+   ].forEach(addPool);
+ }
+
  if(has("tokyo") && has("rain")){
    [
      `rainy tokyo ${variants[0]}`,
@@ -475,7 +531,7 @@ function generateKeywords(v){
      "fall ambience"
    ].forEach(x=>pool.unshift(x));
  }
- if(has("rain") && v.use.startsWith("Sleep /")){
+ if(has("rain") && v.use==="Sleep"){
    ["rain sounds for sleep","gentle rain sleep music","night rain ambience","soothing rain sounds"].forEach(x=>pool.unshift(x));
  }
  if(has("cozy") && has("rain")){
@@ -521,6 +577,7 @@ function generateKeywords(v){
  for(const kw of (rotateArray(out,state.keywordSeed).slice(0,9))){
    const key=normalizeKeywordKey(kw);
    if(!key || key===mainKeywordKey || finalKeywordMap.has(key)) continue;
+   if(hasOpposingActivityContexts(kw)) continue;
    finalKeywordMap.set(key,kw);
  }
  state.keywords=[...finalKeywordMap.values()].slice(0,9);
@@ -566,7 +623,7 @@ function generateMoods(v){
  if(has("autumn")){
    ["cozy autumn evening","quiet autumn night","warm autumn afternoon","autumn cafe ambience","peaceful fall evening"].forEach(add);
  }
- if(has("rain") && v.use.startsWith("Sleep /")){
+ if(has("rain") && v.use==="Sleep"){
    ["rainy night for deep sleep","gentle rain at bedtime","quiet rain through the night","soft nighttime rainfall"].forEach(add);
  }
  if(has("cozy") && has("rain")){
@@ -803,7 +860,10 @@ function generateTitles(v){
  }
  titles=unique(titles).map(t=>({title:t,score:scoreTitle(t,v),len:t.length}));
  titles.sort((a,b)=>b.score-a.score);
- state.titles=titles.slice(0,10);
+ state.titles=(titles.slice(0,10)).filter(item=>{
+   const titleText=typeof item==="string" ? item : (item && item.title ? item.title : "");
+   return titleText && !hasOpposingActivityContexts(titleText);
+ })
 }
 function hashtag(s){return "#"+s.replace(/[^a-zA-Z0-9 ]/g," ").trim().split(/\s+/).map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join("")}
 function copyText(t,btn){
@@ -903,9 +963,88 @@ function scrollToKeywordAnalysis(){
  });
 }
 
+
+function useCaseToActivityContext(useCase){
+ const map={
+   Study:"study",
+   Work:"work",
+   Relax:"relax",
+   Focus:"focus",
+   Sleep:"sleep"
+ };
+ return map[String(useCase||"")] || "";
+}
+
+function getActivityContextsFromText(text){
+ return Object.keys(ACTIVITY_CONTEXT_GROUPS)
+   .filter(group=>phraseHasActivityContext(text,group));
+}
+
+function inputContextsConflict(cluster,mainKeyword,useCase){
+ const contexts=new Set([
+   ...getActivityContextsFromText(cluster),
+   ...getActivityContextsFromText(mainKeyword)
+ ]);
+
+ const selectedContext=useCaseToActivityContext(useCase);
+ if(selectedContext) contexts.add(selectedContext);
+
+ return INCOMPATIBLE_ACTIVITY_CONTEXTS.some(([a,b])=>
+   contexts.has(a) && contexts.has(b)
+ );
+}
+
+
+function scrollToVideoSeoInput(){
+ requestAnimationFrame(()=>{
+   requestAnimationFrame(()=>{
+     const target=document.getElementById("videoSeoInput");
+     if(!target) return;
+
+     const stickyCandidates=[
+       document.querySelector("header"),
+       document.querySelector(".topbar"),
+       document.querySelector(".app-header"),
+       document.querySelector(".sticky"),
+       document.querySelector('[style*="position:sticky"]')
+     ].filter(Boolean);
+
+     let stickyHeight=0;
+     for(const el of stickyCandidates){
+       const style=getComputedStyle(el);
+       if(style.position==="sticky" || style.position==="fixed"){
+         stickyHeight=Math.max(stickyHeight,el.getBoundingClientRect().height);
+       }
+     }
+
+     if(stickyHeight<40) stickyHeight=112;
+
+     const extraGap=16;
+     const targetTop=target.getBoundingClientRect().top + window.scrollY;
+     const scrollTop=Math.max(0,targetTop-stickyHeight-extraGap);
+
+     window.scrollTo({
+       top:scrollTop,
+       behavior:"smooth"
+     });
+   });
+ });
+}
+
+function generationContextWarning(){
+ return "Cluster, Main Keyword, atau Use Case yang dipilih memiliki konteks yang saling bertentangan. Coba sesuaikan input yang konflik lalu generate kembali.";
+}
+
 async function run(mode="all"){
  try{
    const v=validate(); if(!v)return;
+   if(inputContextsConflict(v.cluster,v.main,v.use)){
+     showWarn(generationContextWarning());
+     $("placeholder").style.display="block";
+     $("output").style.display="none";
+     scrollToVideoSeoInput();
+     return;
+   }
    $("placeholder").style.display="none";
    $("output").style.display="none";
    $("loading").style.display="block";
@@ -954,14 +1093,17 @@ async function run(mode="all"){
      generateTitles(v);
    }
 
-   if(!state.titles.length) throw new Error("No valid titles were generated.");
+   if(!state.keywords.length) throw new Error(generationContextWarning());
+   if(!state.titles.length) throw new Error(generationContextWarning());
    render(v);
 
    // Scroll only after the newly generated output has been mounted.
    scrollToKeywordAnalysis();
  }catch(err){
    console.error(err);
-   showWarn("Generator error: "+(err && err.message ? err.message : "Unknown error"));
+   const message=(err && err.message) ? err.message : "Terjadi kendala saat menghasilkan konten. Coba ubah Main Keyword atau Use Case lalu generate kembali.";
+   showWarn(message);
+   if(message===generationContextWarning()) scrollToVideoSeoInput();
    $("placeholder").style.display="block";
  }finally{
    $("loading").style.display="none";

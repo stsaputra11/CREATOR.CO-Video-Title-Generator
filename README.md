@@ -295,3 +295,49 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Patched the actual `#niche` select markup.
 - Updated visible niche options to the new grouped values.
 - Removed the old plain Lofi / Piano / Lullaby / Tibetan Flute options.
+
+## v54 Use Case Reset
+- Use Case: Study, Work, Relax, Focus, Sleep only.
+- Related Keywords block terms from other use cases.
+
+
+## v55 Related Keyword Strategy Revision
+- Removed hard conflict guard between use cases.
+- Related Keywords now prioritize Main Keyword first.
+- Selected Use Case is used as a soft context signal to expand keyword variations naturally.
+- Existing uniqueness and Main Keyword exact-duplicate protections remain active.
+
+## v56 Context Compatibility Guard
+- Related Keywords reject opposing activity contexts inside the same phrase.
+- Current incompatible pairs: Sleep+Focus, Sleep+Study, Sleep+Work.
+- Example rejected: `rain sleep focus beats`.
+- Main Keyword + Use Case remain the primary generation signals.
+
+
+## v57 Title Context Compatibility
+- The same opposing-context filter used by Related Keywords is now applied to generated titles.
+- Titles containing Sleep+Focus, Sleep+Study, or Sleep+Work are rejected.
+- Final safety filtering runs before titles are displayed.
+- Relax + Focus remains allowed.
+
+## v58 Friendly Generation Warning
+- Added a user-friendly warning when Related Keywords or Titles cannot be generated.
+- Message explains that Main Keyword and Use Case may have conflicting context.
+- Removed the technical `Generator error:` prefix for this case.
+
+## v59 Main Keyword × Use Case Pre-validation
+- Added validation before Related Keyword and Title generation.
+- Conflicting Main Keyword + Use Case combinations are blocked immediately.
+- Examples blocked: `sleep rain lofi` + Focus, `deep focus music` + Sleep.
+- Compatible combinations continue to generate normally.
+
+## v60 Warning Auto-scroll
+- Conflict warnings now auto-scroll to Video SEO Input.
+- Scroll position accounts for sticky/fixed header height.
+- Added a 16px visual gap and scroll-margin fallback so the target is not covered.
+
+## v61 Unified Input Context Validation
+- Context validation now checks Cluster + Main Keyword + Use Case together.
+- Conflicting activity intent spread across different fields is blocked.
+- Example blocked: Cluster `sleep rain` + Main Keyword `focus music`.
+- Existing sticky-header-safe warning auto-scroll remains active.
