@@ -1734,31 +1734,12 @@ function applyTheme(v){
 $("themeSelect").value=localStorage.getItem("creatorTheme")||"system";applyTheme($("themeSelect").value);$("themeSelect").onchange=e=>applyTheme(e.target.value);
 
 let deferredInstallPrompt=null;
-const installBtn=$("installAppBtn");
 
-window.addEventListener("beforeinstallprompt",(e)=>{
- e.preventDefault();
- deferredInstallPrompt=e;
- if(installBtn) installBtn.style.display="inline-block";
-});
 
-if(installBtn){
- installBtn.addEventListener("click",async()=>{
-   if(!deferredInstallPrompt){
-     showWarn("Install belum tersedia. Pastikan manifest.json, sw.js, dan icon PWA berhasil dimuat dari domain ini. Di iPhone/iPad gunakan Safari → Share → Add to Home Screen.");
-     return;
-   }
-   deferredInstallPrompt.prompt();
-   try{ await deferredInstallPrompt.userChoice; }catch(e){}
-   deferredInstallPrompt=null;
-   installBtn.style.display="none";
- });
-}
 
-window.addEventListener("appinstalled",()=>{
- deferredInstallPrompt=null;
- if(installBtn) installBtn.style.display="none";
-});
+
+
+
 
 if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost" || location.hostname==="127.0.0.1")){
  window.addEventListener("load",()=>{

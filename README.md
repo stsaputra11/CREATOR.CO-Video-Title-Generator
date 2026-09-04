@@ -404,3 +404,15 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Validation auto-scroll is handled only in run() after validate() returns null.
 - Existing validate() logic is left untouched.
 - Generate, Regenerate, Reset, Theme, and PWA handlers remain unchanged from v70.
+
+## v73 Header Cleanup
+- Removed the Install App button from the header.
+- PWA manifest/service worker support remains intact.
+- Theme selector and branding remain unchanged.
+
+## v74 Install Button Hard Removal
+- Removed all Install App button markup.
+- Removed JavaScript references that could recreate/show it after theme changes.
+- Removed beforeinstallprompt/appinstalled UI handlers.
+- Added defensive CSS to force-hide any stale cached install button DOM.
+- PWA manifest/service worker remain intact.
