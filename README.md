@@ -382,3 +382,19 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Service worker cache version bumped to v67.
 - Restored required PWA icon files and Vercel headers.
 - Android status bars do not support CSS gradients; the teal endpoint of the app gradient is used as the solid system color.
+
+## v68 Restore Original CREATOR.CO Icons
+- Restored the exact user-provided 192x192 and 512x512 CREATOR.CO icons.
+- Favicon, Apple touch icon, and PWA manifest now reference these restored assets.
+- Service worker cache bumped so installed PWAs can refresh the icons.
+
+## v69 Header Brand Logo
+- Added a small CREATOR.CO logo to the left of the H1 title.
+- Uses the same original 192x192 brand icon as favicon/PWA.
+- Responsive sizing added for mobile and desktop.
+
+## v70 Header Logo Reliability Fix
+- Header H1 logo now uses an embedded data URL to prevent broken-image/404 issues.
+- Original user-provided CREATOR.CO icon is preserved exactly.
+- PWA/favicon icon file remains included in /icons.
+- Service worker cache bumped to v70.
