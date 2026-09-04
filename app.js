@@ -288,17 +288,14 @@ function validate(){
  if(!vals.use)missing.push("Use Case");
  if(missing.length){
    showWarn("Please complete: "+missing.join(", ")+".");
-   scrollToVideoSeoInput();
    return null;
  }
  if(selectedAtmos.length<1){
    showWarn("Please select at least 1 Atmosphere / Vibes option.");
-   scrollToVideoSeoInput();
    return null;
  }
  if(selectedAtmos.length>5){
-   showWarn("Please select a maximum of 5 Atmosphere / Vibes option.");
-   scrollToVideoSeoInput();
+   showWarn("Please select a maximum of 5 Atmosphere / Vibes options.");
    return null;
  }
  $("warning").style.display="none";
@@ -1346,9 +1343,13 @@ function generationContextWarning(){
  return "Cluster, Main Keyword, atau Use Case yang dipilih memiliki konteks yang saling bertentangan. Coba sesuaikan input yang konflik lalu generate kembali.";
 }
 
-async async function run(mode="all"){
+async function run(mode="all"){
  try{
-   const v=validate(); if(!v)return;
+   const v=validate();
+   if(!v){
+     scrollToVideoSeoInput();
+     return;
+   }
    if(inputContextsConflict(v.cluster,v.main,v.use)){
      showWarn(generationContextWarning());
      $("placeholder").style.display="block";
