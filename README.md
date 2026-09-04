@@ -270,3 +270,28 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Theme preference is persisted in localStorage.
 - System mode follows OS color-scheme changes.
 - Reset button now spans the full row at 100% width.
+
+
+## v50 Related Keyword Exact-Uniqueness Guard
+- Related Keyword is rejected if it equals Main Keyword after normalization.
+- Related Keywords are unique against one another after normalization.
+- Equality check ignores capitalization, repeated spaces, and punctuation separators.
+- Existing semantic near-duplicate protection remains active.
+- A final safety filter runs before saving the 9 Related Keywords.
+
+
+## v51 Copy Revision
+- Changed visible label from `AI Mood / Scenario` to `Mood / Scenario`.
+- Generator logic remains unchanged.
+
+## v52 Niche / Use Case Update
+- Updated niche groups and use-case groups.
+- Added Spa / Relaxation / Massage / Meditation.
+- Removed standalone Focus.
+- Updated Cinematic hooks and Additional variations labels.
+
+
+## v53 Niche Dropdown UI Fix
+- Patched the actual `#niche` select markup.
+- Updated visible niche options to the new grouped values.
+- Removed the old plain Lofi / Piano / Lullaby / Tibetan Flute options.

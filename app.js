@@ -1,4 +1,15 @@
 
+function primaryUseCase(useValue){
+ const s=String(useValue||"");
+ if(s.startsWith("Study /")) return "Study";
+ if(s.startsWith("Work /")) return "Work";
+ if(s.startsWith("Relax /")) return "Relax";
+ if(s.startsWith("Sleep /")) return "Sleep";
+ if(s.startsWith("Spa /")) return "Spa";
+ return s.split(" / ")[0] || s;
+}
+
+
 const $=id=>document.getElementById(id);
 let state={keywords:[],moods:[],atmos:[],emotions:[],titles:[],keywordSeed:0,atmosSeed:0};
 
@@ -131,7 +142,17 @@ function isNaturalKeyword(s){
  return true;
 }
 
-function addCandidate(list,candidate,selectedNiche,baseCore=""){
+
+function normalizeKeywordKey(value){
+ return String(value||"")
+   .normalize("NFKC")
+   .toLowerCase()
+   .replace(/[^\p{L}\p{N}\s]/gu," ")
+   .replace(/\s+/g," ")
+   .trim();
+}
+
+function addCandidate(list,candidate,selectedNiche,baseCore="",mainKeyword=""){
  let c=stripRepeatedConcepts(candidate);
  c=normalizePhrase(c);
  if(baseCore){
@@ -141,16 +162,26 @@ function addCandidate(list,candidate,selectedNiche,baseCore=""){
    const seenBase=new Set(baseTokens);
    for(const t of candTokens){
      const canon=canonicalToken(t);
-     // Keep a base concept at most once across the whole phrase.
      if(filtered.some(x=>canonicalToken(x)===canon)) continue;
      filtered.push(t);
    }
    c=filtered.join(" ").trim();
  }
+
+ const candidateKey=normalizeKeywordKey(c);
+ const mainKey=normalizeKeywordKey(mainKeyword);
+
+ if(!candidateKey) return;
+ if(mainKey && candidateKey===mainKey) return;
  if(!isNaturalKeyword(c)) return;
  if(selectedNiche && containsOtherNicheTerm(c,selectedNiche)) return;
- if(list.some(x=>normalizePhrase(x)===c)) return;
+
+ // Hard uniqueness guard after normalization.
+ if(list.some(x=>normalizeKeywordKey(x)===candidateKey)) return;
+
+ // Keep the existing semantic-near-duplicate guard too.
  if(list.some(x=>phraseSimilarity(x,c)>=0.82)) return;
+
  list.push(c);
 }
 
@@ -245,13 +276,13 @@ function showWarn(t){
 
 
 const NICHE_GROUPS = {
- "Lofi":["lofi"],
+ "Lofi Hiphop / Lofi Chill / Lofi Beats / Chillbeats":["lofi"],
  "Jazz / Bossa Nova":["jazz","bossa nova","bossa"],
  "Dark Piano / Dark Academia":["dark piano","dark academia"],
  "Guitar / Acoustic":["guitar","acoustic"],
- "Piano":["piano"],
- "Baby Lullaby / Gentle Lullaby / Music Box":["baby lullaby","gentle lullaby","music box","lullaby"],
- "Tibetan Flute":["tibetan flute"],
+ "Gentle Piano / Healing Piano / Calming Piano":["piano"],
+ "Baby Lullaby / Gentle Lullaby / Lullaby Piano / Lullaby Music Box":["baby lullaby","gentle lullaby","music box","lullaby"],
+ "Tibetan Flute / Calm Flute / Gentle Flute":["tibetan flute"],
  "Deep House / Techno EDM / Techno Melodic":["deep house","techno edm","edm","techno melodic","melodic techno"]
 };
 
@@ -290,12 +321,15 @@ function selectedNicheTerm(v){
 
 function selectedNicheDisplayVariants(v){
  const n=v.niche;
- if(n==="Jazz / Bossa Nova") return ["jazz","bossa nova","jazz & bossa nova"];
- if(n==="Dark Piano / Dark Academia") return ["dark piano","dark academia","dark academia piano"];
- if(n==="Guitar / Acoustic") return ["acoustic guitar","guitar","acoustic"];
- if(n==="Baby Lullaby / Gentle Lullaby / Music Box") return ["baby lullaby","gentle lullaby","music box","gentle music box lullaby"];
- if(n==="Deep House / Techno EDM / Techno Melodic") return ["deep house","melodic techno","techno edm","deep house & melodic techno"];
- return [selectedNicheTerm(v)];
+ if(n==="Lofi Hiphop / Lofi Chill / Lofi Beats / Chillbeats") return ["lofi hiphop","lofi chill","lofi beats","chillbeats"];
+ if(n==="Jazz / Bossa Nova") return ["jazz","bossa nova"];
+ if(n==="Dark Piano / Dark Academia") return ["dark piano","dark academia"];
+ if(n==="Guitar / Acoustic") return ["guitar","acoustic"];
+ if(n==="Gentle Piano / Healing Piano / Calming Piano") return ["gentle piano","healing piano","calming piano"];
+ if(n==="Baby Lullaby / Gentle Lullaby / Lullaby Piano / Lullaby Music Box") return ["baby lullaby","gentle lullaby","lullaby piano","lullaby music box"];
+ if(n==="Tibetan Flute / Calm Flute / Gentle Flute") return ["tibetan flute","calm flute","gentle flute"];
+ if(n==="Deep House / Techno EDM / Techno Melodic") return ["deep house","techno edm","techno melodic"];
+ return [String(n||"").toLowerCase()];
 }
 
 
@@ -324,7 +358,7 @@ function generateKeywords(v){
  }
  function addPool(candidate){ pool.push(candidate); }
 
- if(v.niche==="Lofi"){
+ if(v.niche==="Lofi Hiphop / Lofi Chill / Lofi Beats / Chillbeats"){
    [
      `${joined} lofi`,
      maybePhrase(`${joined} lofi`,`ambience`),
@@ -372,7 +406,7 @@ function generateKeywords(v){
      maybePhrase(`${joined}`,`calm acoustic`),
      maybePhrase(`${joined}`,`gentle guitar`)
    ].forEach(addPool);
- } else if(v.niche==="Piano"){
+ } else if(v.niche==="Gentle Piano / Healing Piano / Calming Piano"){
    [
      `${joined} piano`,
      `${joined} piano music`,
@@ -384,7 +418,7 @@ function generateKeywords(v){
      maybePhrase(`${joined}`,`focus piano`),
      maybePhrase(`${joined}`,`background piano`)
    ].forEach(addPool);
- } else if(v.niche==="Baby Lullaby / Gentle Lullaby / Music Box"){
+ } else if(v.niche==="Baby Lullaby / Gentle Lullaby / Lullaby Piano / Lullaby Music Box"){
    [
      `${joined} baby lullaby`,
      `${joined} gentle lullaby`,
@@ -396,7 +430,7 @@ function generateKeywords(v){
      maybePhrase(`${joined}`,`lullaby melody`),
      maybePhrase(`${joined}`,`music box lullaby`)
    ].forEach(addPool);
- } else if(v.niche==="Tibetan Flute"){
+ } else if(v.niche==="Tibetan Flute / Calm Flute / Gentle Flute"){
    [
      `${joined} tibetan flute`,
      maybePhrase(`${joined}`,`flute meditation`),
@@ -441,7 +475,7 @@ function generateKeywords(v){
      "fall ambience"
    ].forEach(x=>pool.unshift(x));
  }
- if(has("rain") && v.use==="Sleep"){
+ if(has("rain") && v.use.startsWith("Sleep /")){
    ["rain sounds for sleep","gentle rain sleep music","night rain ambience","soothing rain sounds"].forEach(x=>pool.unshift(x));
  }
  if(has("cozy") && has("rain")){
@@ -450,7 +484,7 @@ function generateKeywords(v){
 
  const variedPool=rotateArray(pool,state.keywordSeed);
  state.keywordSeed++;
- for(const c of variedPool) addCandidate(out,c,v.niche,joined);
+ for(const c of variedPool) addCandidate(out,c,v.niche,joined,v.main);
 
  const safeFallback=[
    maybePhrase(`${joined}`,`mood`),
@@ -462,7 +496,7 @@ function generateKeywords(v){
  ];
  for(const c of rotateArray(safeFallback,state.keywordSeed)){
    if(out.length>=9) break;
-   addCandidate(out,c,v.niche,joined);
+   addCandidate(out,c,v.niche,joined,v.main);
  }
 
  // Add secondary variants to ensure regenerate can produce a genuinely different set.
@@ -479,10 +513,17 @@ function generateKeywords(v){
  ];
  for(const c of rotateArray(secondary,state.keywordSeed+3)){
    if(out.length>=12) break;
-   addCandidate(out,c,v.niche,joined);
+   addCandidate(out,c,v.niche,joined,v.main);
  }
 
- state.keywords=rotateArray(out,state.keywordSeed).slice(0,9);
+ const mainKeywordKey=normalizeKeywordKey(v.main);
+ const finalKeywordMap=new Map();
+ for(const kw of (rotateArray(out,state.keywordSeed).slice(0,9))){
+   const key=normalizeKeywordKey(kw);
+   if(!key || key===mainKeywordKey || finalKeywordMap.has(key)) continue;
+   finalKeywordMap.set(key,kw);
+ }
+ state.keywords=[...finalKeywordMap.values()].slice(0,9);
 }
 
 function sentenceCase(s){
@@ -493,13 +534,13 @@ function sentenceCase(s){
 
 function nicheLabel(niche){
  const map={
-   "Lofi":"lofi",
+   "Lofi Hiphop / Lofi Chill / Lofi Beats / Chillbeats":"lofi",
    "Jazz / Bossa Nova":"jazz / bossa nova",
    "Dark Piano / Dark Academia":"dark piano / dark academia",
    "Guitar / Acoustic":"guitar / acoustic",
-   "Piano":"piano",
-   "Baby Lullaby / Gentle Lullaby / Music Box":"baby lullaby / gentle lullaby / music box",
-   "Tibetan Flute":"tibetan flute",
+   "Gentle Piano / Healing Piano / Calming Piano":"piano",
+   "Baby Lullaby / Gentle Lullaby / Lullaby Piano / Lullaby Music Box":"baby lullaby / gentle lullaby / music box",
+   "Tibetan Flute / Calm Flute / Gentle Flute":"tibetan flute",
    "Deep House / Techno EDM / Techno Melodic":"deep house / techno edm / melodic techno"
  };
  return map[niche] || niche.toLowerCase();
@@ -525,7 +566,7 @@ function generateMoods(v){
  if(has("autumn")){
    ["cozy autumn evening","quiet autumn night","warm autumn afternoon","autumn cafe ambience","peaceful fall evening"].forEach(add);
  }
- if(has("rain") && v.use==="Sleep"){
+ if(has("rain") && v.use.startsWith("Sleep /")){
    ["rainy night for deep sleep","gentle rain at bedtime","quiet rain through the night","soft nighttime rainfall"].forEach(add);
  }
  if(has("cozy") && has("rain")){
@@ -599,8 +640,8 @@ function buildTitle(v,mood,emotion,atmosphere,i){
 
 function generateEmotions(v){
  let base=["Calm Music","Chill Beats","Peaceful Music","Relaxing Music","Uplifting Music","Calm Beats","Peaceful Melody","Relaxing Melody","Chill Music"];
- if(v.niche.includes("Lofi")) base=["Chill Beats","Calm Beats","Relaxing Music","Peaceful Beats","Chill Music","Calm Music"];
- else if(v.niche.includes("Piano")||v.niche.includes("Lullaby")||v.niche.includes("Music Box")) base=["Peaceful Melody","Relaxing Music","Calm Melody","Peaceful Music","Calm Music"];
+ if(v.niche.includes("Lofi Hiphop / Lofi Chill / Lofi Beats / Chillbeats")) base=["Chill Beats","Calm Beats","Relaxing Music","Peaceful Beats","Chill Music","Calm Music"];
+ else if(v.niche.includes("Gentle Piano / Healing Piano / Calming Piano")||v.niche.includes("Lullaby")||v.niche.includes("Music Box")) base=["Peaceful Melody","Relaxing Music","Calm Melody","Peaceful Music","Calm Music"];
  else if(v.niche.includes("Jazz")||v.niche.includes("Bossa")) base=["Relaxing Music","Chill Music","Calm Music","Peaceful Music","Uplifting Music"];
  else if(v.niche.includes("Techno")||v.niche.includes("House")) base=["Uplifting Music","Chill Beats","Calm Beats","Relaxing Music","Chill Music"];
  state.emotions=base.slice(0,5);
@@ -787,13 +828,13 @@ function render(v){
  const atHtml=state.atmos.map((a,i)=>`<div class="atmo">${i+1}. ${a}</div>`).join("");
  const titleHtml=state.titles.slice(1).map((o,i)=>`<div class="title-item"><p><b>${i+2}.</b> ${o.title}</p><div class="title-bottom"><div class="metrics"><span>SEO Score ${o.score}/100 | ${o.len} chars</span></div><button class="copy" onclick='copyText(${JSON.stringify(o.title)},this)'>Copy</button></div></div>`).join("");
  $("output").innerHTML=`
- <div class="card result-card"><div class="kicker" id="keywordAnalysis">Keyword Analysis</div><div class="row-between"><div><h2 class="section-title">${v.main}</h2><p class="section-sub" style="margin:4px 0 0">Topic Cluster: ${v.cluster}</p></div><span class="badge">${v.niche} · ${v.use}</span></div></div>
+ <div class="card result-card"><div class="kicker" id="keywordAnalysis">Keyword Analysis</div><div class="row-between"><div><h2 class="section-title">${v.main}</h2><p class="section-sub" style="margin:4px 0 0">Topic Cluster: ${v.cluster}</p></div><span class="badge">${v.niche} · ${primaryUseCase(v.use)}</span></div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Related Keywords</div><h2 class="section-title">9 SEO keyword ideas</h2><p class="section-sub" style="margin:4px 0 0">Related keywords may mix genres only within the selected niche group, while blocking overlap with other niche groups.</p></div><button class="copy" onclick='copyText(${JSON.stringify(state.keywords.join(", "))},this)'>Copy Keywords</button></div><div class="keyword-list">${kwHtml}</div></div>
- <div class="card result-card"><div class="row-between"><div><div class="kicker">AI Mood / Scenario</div><h2 class="section-title">High-intent scenario hooks</h2></div><button class="copy" onclick='copyText(${JSON.stringify(state.moods.join(", "))},this)'>Copy Mood Ideas</button></div><div class="chips">${state.moods.map(x=>`<span class="chip">${sentenceCase(x)}</span>`).join("")}</div></div>
+ <div class="card result-card"><div class="row-between"><div><div class="kicker">Mood / Scenario</div><h2 class="section-title">High-intent scenario hooks</h2></div><button class="copy" onclick='copyText(${JSON.stringify(state.moods.join(", "))},this)'>Copy Mood Ideas</button></div><div class="chips">${state.moods.map(x=>`<span class="chip">${sentenceCase(x)}</span>`).join("")}</div></div>
  <div class="card result-card"><div class="kicker">Emotional Keywords</div><div class="chips">${state.emotions.map(x=>`<span class="chip">${x}</span>`).join("")}</div></div>
- <div class="card result-card"><div class="kicker">Atmosphere / Vibes</div><h2 class="section-title">10 cinematic hooks</h2><div class="atmo-list">${atHtml}</div></div>
+ <div class="card result-card"><div class="kicker">Atmosphere / Vibes</div><h2 class="section-title">Cinematic hooks</h2><div class="atmo-list">${atHtml}</div></div>
  <div class="card result-card recommended"><div class="row-between"><div><span class="badge">Recommended</span><div class="kicker" style="margin-top:12px">Best Title</div></div><button class="copy" onclick='copyText(${JSON.stringify(best.title)},this)'>Copy Title</button></div><div class="title-text">${best.title}</div><div class="metrics"><span class="metric">SEO Score: ${best.score}/100</span><span class="metric">${best.len} characters</span></div></div>
- <div class="card result-card"><div class="kicker">Alternative Titles</div><h2 class="section-title">9 additional variations</h2><div class="title-list">${titleHtml}</div></div>
+ <div class="card result-card"><div class="kicker">Alternative Titles</div><h2 class="section-title">Additional variations</h2><div class="title-list">${titleHtml}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">Main + 9 Related Keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Uses SEO-potential ranking. No fabricated monthly search-volume data.</small></div>
  <div class="result-actions">
