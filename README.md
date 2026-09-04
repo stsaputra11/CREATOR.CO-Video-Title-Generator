@@ -180,3 +180,51 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Application accent updated to the same red-to-purple gradient family.
 - Focus, badge, checkbox, and theme accent treatments updated for consistency.
 - PWA theme color updated to `#4e278c`.
+
+
+## v37 Visual / SEO / Copy Revision
+- Primary gradient changed to `#604de6 → #4ac0bb`.
+- Application accent updated to the same gradient family.
+- Added `<meta name="robots" content="index, follow">`.
+- Visible H1 changed to `CREATOR.CO` only; page/meta title remains unchanged.
+- Visible description changed to `Music Video Title Generator and Topic Cluster`.
+- Export button label changed to `Export (.xlsx)`.
+
+
+## v38 Mobile Result Actions
+- Bulk Copy and Export (.xlsx) remain side-by-side on mobile.
+- Both buttons use equal-width 2-column layout.
+- Mobile spacing and padding adjusted to avoid wrapping.
+
+
+## v39 Mobile Result Action Fix
+- Patched the actual dynamically-rendered Bulk Copy / Export wrapper.
+- Forced a true two-column grid at all screen sizes.
+- Added compact breakpoints at 480px and 360px.
+- Buttons now flex to available width instead of stacking.
+
+
+## v40 Mobile Button Layout Final Fix
+- Fixed actual dynamic Export button ID: `exportResultsBtn`.
+- Replaced inline action wrapper with `.result-actions`.
+- Bulk Copy and Export (.xlsx) are now forced into equal two-column layout.
+- Added compact mobile rules down to 360px.
+
+
+## v41 Mobile Result Actions Cleanup
+- Removed previous conflicting result-action CSS rules.
+- Desktop: Bulk Copy and Export (.xlsx) remain side-by-side.
+- Mobile (≤640px): buttons stack vertically.
+- Both mobile buttons use full width.
+
+
+## v42 Tablet Action Width Fix
+- Tablet breakpoint extended to 900px.
+- At 900px and below, Bulk Copy and Export (.xlsx) stack vertically.
+- Both buttons are forced to full width.
+
+
+## v43 Result Button Layout Fix
+- Root cause fixed: global `.primary { grid-column:1/-1 }` made Bulk Copy span both columns.
+- Desktop: Bulk Copy and Export (.xlsx) now sit side-by-side at equal width.
+- Tablet/mobile ≤900px: buttons stack vertically at 100% width.

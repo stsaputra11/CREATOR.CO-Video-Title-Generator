@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CREATOR.CO - Music Video Title Generator</title>
 <meta name="description" content="CREATOR.CO - Music Video Title Generator, buat judul dan topik cluster untuk video musik channel Youtube jadi lebih praktis.">
+<meta name="robots" content="index, follow">
 <meta name="keywords" content="ai video title generator, topic content clustering">
 <meta name="publisher" content="Santanu Saputra">
 <link rel="alternate" hreflang="id" href="https://creator-co.vercel.app/">
@@ -30,9 +31,9 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
 <style>
-:root{--accent-gradient:linear-gradient(135deg,#bf3b3b 0%,#4e278c 100%);--accent-gradient-hover:linear-gradient(135deg,#a83232 0%,#3f1f73 100%);
+:root{--accent-gradient:linear-gradient(135deg,#604de6 0%,#4ac0bb 100%);--accent-gradient-hover:linear-gradient(135deg,#503fd0 0%,#3aa9a5 100%);
   --bg:#f6f7fb;--panel:#ffffff;--panel2:#f0f2f7;--text:#151821;--muted:#687083;
-  --border:#dfe3ea;--accent:#bf3b3b;--accent2:#4e278c;--good:#15a36d;--warn:#d99100;
+  --border:#dfe3ea;--accent:#604de6;--accent2:#4ac0bb;--good:#15a36d;--warn:#d99100;
   --shadow:0 16px 40px rgba(20,25,45,.08)
 }
 html[data-theme="dark"]{
@@ -121,71 +122,57 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
   text-align:left;
 }
 .check-note{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px;margin-top:7px}
-@media(max-width:620px){.checkbox-grid{grid-template-columns:1fr}}
 
-
-.theme-select select{background:var(--panel);color:var(--text);border:0;outline:0}
-.theme-select select option{background:var(--panel);color:var(--text)}
-html[data-theme="dark"] .theme-select select option{background:#14171f;color:#f4f6fb}
-html[data-theme="light"] .theme-select select option{background:#ffffff;color:#151821}
-
-
-.actions .reset-center{
-  grid-column:1 / -1;
-  justify-self:center;
-  width:min(260px,100%);
 }
 
 
-#keywordAnalysis{
-  scroll-margin-top:140px;
+
+@media (max-width:480px){
+  
+}
+@media (max-width:360px){
+  
 }
 
 
-.primary,
-button.primary,
-#generate,
-#copyAllBtn,
-#installAppBtn{
-  background:var(--accent-gradient) !important;
-  border-color:transparent !important;
-  color:#fff !important;
+
+
+
+/* v43 result action layout */
+.result-actions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  width:100%;
 }
-.primary:hover,
-button.primary:hover,
-#generate:hover,
-#copyAllBtn:hover,
-#installAppBtn:hover{
-  background:var(--accent-gradient-hover) !important;
-}
-.primary:focus-visible,
-button.primary:focus-visible,
-#generate:focus-visible,
-#copyAllBtn:focus-visible,
-#installAppBtn:focus-visible{
-  outline:3px solid rgba(191,59,59,.22);
-  outline-offset:2px;
+.result-actions > button{
+  grid-column:auto !important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100% !important;
+  min-width:0;
+  max-width:none !important;
+  margin:0 !important;
+  box-sizing:border-box;
 }
 
-/* App accent treatments */
-.badge,
-.kicker{
-  color:#bf3b3b;
-}
-input:focus,
-select:focus,
-textarea:focus{
-  border-color:#bf3b3b !important;
-  box-shadow:0 0 0 3px rgba(191,59,59,.12);
-}
-.atmo-option{
-  accent-color:#7f3264 !important;
+@media (max-width:900px){
+  .result-actions{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  .result-actions > button{
+    grid-column:1 !important;
+    width:100% !important;
+    max-width:none !important;
+  }
 }
 
 </style>
 
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#4e278c">
+<meta name="theme-color" content="#4ac0bb">
 <meta name="application-name" content="CREATOR.CO - Music Video Title Generator">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -196,7 +183,7 @@ textarea:focus{
 <body>
 <div class="app">
 <header><div class="header-inner">
-  <div class="brand"><h1>CREATOR.CO - Music Video Title Generator</h1><p>Generator Judul Video Musik dengan Topik Cluster Berbasis SEO</p></div>
+  <div class="brand"><h1>CREATOR.CO</h1><p>Music Video Title Generator and Topic Cluster</p></div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
   <button class="secondary" id="installAppBtn" style="display:inline-block;padding:8px 12px">Install App</button>
   <div class="theme-select"><span>◐</span><select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
@@ -1046,9 +1033,9 @@ function render(v){
  <div class="card result-card"><div class="kicker">Alternative Titles</div><h2 class="section-title">9 additional variations</h2><div class="title-list">${titleHtml}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">Main + 9 Related Keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Uses SEO-potential ranking. No fabricated monthly search-volume data.</small></div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-   <button class="primary" style="width:100%;grid-column:auto" id="copyAllBtn">Bulk Copy</button>
-   <button class="secondary" style="width:100%" id="exportResultsBtn">Export Spreadsheet (.xlsx)</button>
+ <div class="result-actions">
+   <button class="primary" id="copyAllBtn">Bulk Copy</button>
+   <button class="secondary" id="exportResultsBtn">Export (.xlsx)</button>
  </div>
  `;
  $("output").style.display="contents";

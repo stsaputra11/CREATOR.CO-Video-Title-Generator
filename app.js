@@ -796,9 +796,9 @@ function render(v){
  <div class="card result-card"><div class="kicker">Alternative Titles</div><h2 class="section-title">9 additional variations</h2><div class="title-list">${titleHtml}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">Main + 9 Related Keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Uses SEO-potential ranking. No fabricated monthly search-volume data.</small></div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-   <button class="primary" style="width:100%;grid-column:auto" id="copyAllBtn">Bulk Copy</button>
-   <button class="secondary" style="width:100%" id="exportResultsBtn">Export Spreadsheet (.xlsx)</button>
+ <div class="result-actions">
+   <button class="primary" id="copyAllBtn">Bulk Copy</button>
+   <button class="secondary" id="exportResultsBtn">Export (.xlsx)</button>
  </div>
  `;
  $("output").style.display="contents";
