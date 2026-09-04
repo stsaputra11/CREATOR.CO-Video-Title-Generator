@@ -416,3 +416,15 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Removed beforeinstallprompt/appinstalled UI handlers.
 - Added defensive CSS to force-hide any stale cached install button DOM.
 - PWA manifest/service worker remain intact.
+
+## v75 Teal Accent Unification
+- Replaced remaining purple accent #604de6 with #4ac0bb.
+- Accent text, focus ring, and action styling now use teal.
+- Gradient variables are now teal-only for a consistent visual system.
+- PWA theme_color remains aligned to #4ac0bb.
+
+## v76 Unified Green–Teal Gradient
+- Updated primary button gradient to #15a36d → #4ac0bb.
+- Hover gradient: #12885c → #3aa9a5.
+- Applied consistently across desktop, tablet, mobile, dark mode, light mode, and PWA.
+- PWA theme_color remains aligned to #4ac0bb.

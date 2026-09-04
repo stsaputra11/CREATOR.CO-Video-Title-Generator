@@ -31,9 +31,9 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
 <style>
-:root{--accent-gradient:linear-gradient(135deg,#604de6 0%,#4ac0bb 100%);--accent-gradient-hover:linear-gradient(135deg,#503fd0 0%,#3aa9a5 100%);
+:root{--accent-gradient:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%);--accent-gradient-hover:linear-gradient(135deg,#12885c 0%,#3aa9a5 100%);
   --bg:#f6f7fb;--panel:#ffffff;--panel2:#f0f2f7;--text:#151821;--muted:#687083;
-  --border:#dfe3ea;--accent:#604de6;--accent2:#4ac0bb;--good:#15a36d;--warn:#d99100;
+  --border:#dfe3ea;--accent:#4ac0bb;--accent2:#4ac0bb;--good:#15a36d;--warn:#d99100;
   --shadow:0 16px 40px rgba(20,25,45,.08)
 }
 html[data-theme="dark"]{
@@ -173,10 +173,10 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
 
 /* v46 unified gradient system */
 :root{
-  --accent-start:#604de6;
+  --accent-start:#15a36d;
   --accent-end:#4ac0bb;
-  --accent-gradient:linear-gradient(135deg,var(--accent-start) 0%,var(--accent-end) 100%);
-  --accent-gradient-hover:linear-gradient(135deg,#503fd0 0%,#3aa9a5 100%);
+  --accent-gradient:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%);
+  --accent-gradient-hover:linear-gradient(135deg,#12885c 0%,#3aa9a5 100%);
 }
 
 /* App accents */
@@ -301,6 +301,64 @@ button#installAppBtn{
   margin:0 !important;
   border:0 !important;
   overflow:hidden !important;
+}
+
+
+/* v76 unified primary action gradient across desktop/tablet/mobile/PWA */
+.primary,
+button.primary,
+#generate,
+#copyAllBtn,
+#exportResultsBtn{
+  background:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%) !important;
+  background-image:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%) !important;
+  border-color:transparent !important;
+  color:#fff !important;
+}
+
+.primary:hover,
+button.primary:hover,
+#generate:hover,
+#copyAllBtn:hover,
+#exportResultsBtn:hover{
+  background:linear-gradient(135deg,#12885c 0%,#3aa9a5 100%) !important;
+  background-image:linear-gradient(135deg,#12885c 0%,#3aa9a5 100%) !important;
+}
+
+html[data-theme="dark"] .primary,
+html[data-theme="dark"] button.primary,
+html[data-theme="dark"] #generate,
+html[data-theme="dark"] #copyAllBtn,
+html[data-theme="dark"] #exportResultsBtn,
+html[data-theme="light"] .primary,
+html[data-theme="light"] button.primary,
+html[data-theme="light"] #generate,
+html[data-theme="light"] #copyAllBtn,
+html[data-theme="light"] #exportResultsBtn{
+  background:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%) !important;
+  background-image:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%) !important;
+}
+
+@media (max-width:900px){
+  .primary,
+  button.primary,
+  #generate,
+  #copyAllBtn,
+  #exportResultsBtn{
+    background:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%) !important;
+    background-image:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%) !important;
+  }
+}
+
+@media (max-width:640px){
+  .primary,
+  button.primary,
+  #generate,
+  #copyAllBtn,
+  #exportResultsBtn{
+    background:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%) !important;
+    background-image:linear-gradient(135deg,#15a36d 0%,#4ac0bb 100%) !important;
+  }
 }
 
 </style>
