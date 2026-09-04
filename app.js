@@ -1236,7 +1236,7 @@ function applyTheme(v){
  let t=v;if(v==="system")t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
  document.documentElement.setAttribute("data-theme",t);localStorage.setItem("creatorTheme",v)
 }
-$("theme").value=localStorage.getItem("creatorTheme")||"system";applyTheme($("theme").value);$("theme").onchange=e=>applyTheme(e.target.value);
+$("themeSelect").value=localStorage.getItem("creatorTheme")||"system";applyTheme($("themeSelect").value);$("themeSelect").onchange=e=>applyTheme(e.target.value);
 
 let deferredInstallPrompt=null;
 const installBtn=$("installAppBtn");
@@ -1270,4 +1270,42 @@ if("serviceWorker" in navigator && (location.protocol==="https:" || location.hos
    navigator.serviceWorker.register("/sw.js").catch(err=>console.warn("Service worker registration failed:",err));
  });
 }
+
+
+(function(){
+ const themeSelect=document.getElementById("themeSelect");
+ if(!themeSelect)return;
+
+ function applyTheme(mode){
+   const root=document.documentElement;
+   if(mode==="system"){
+     const prefersDark=window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+     root.setAttribute("data-theme",prefersDark?"dark":"light");
+   }else{
+     root.setAttribute("data-theme",mode);
+   }
+ }
+
+ themeSelect.addEventListener("change",()=>{
+   const mode=themeSelect.value;
+   try{localStorage.setItem("creatorCoTheme",mode);}catch(e){}
+   applyTheme(mode);
+ });
+
+ let saved="system";
+ try{saved=localStorage.getItem("creatorCoTheme")||"system";}catch(e){}
+ if(["system","light","dark"].includes(saved)){
+   themeSelect.value=saved;
+   applyTheme(saved);
+ }
+
+ if(window.matchMedia){
+   const mq=window.matchMedia("(prefers-color-scheme: dark)");
+   const onSystemChange=()=>{
+     if(themeSelect.value==="system") applyTheme("system");
+   };
+   if(mq.addEventListener) mq.addEventListener("change",onSystemChange);
+   else if(mq.addListener) mq.addListener(onSystemChange);
+ }
+})();
 

@@ -263,3 +263,10 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Each System / Light / Dark option also carries inline dark-text + white-background styling.
 - Added final scoped CSS with `color-scheme: light` for native popup options.
 - This is intentionally isolated from the app accent/theme palette so future visual changes cannot alter option readability.
+
+
+## v49 Theme + Reset Fix
+- Fixed Light / Dark / System selector after the theme select ID change.
+- Theme preference is persisted in localStorage.
+- System mode follows OS color-scheme changes.
+- Reset button now spans the full row at 100% width.
