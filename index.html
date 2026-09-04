@@ -170,44 +170,118 @@ footer{max-width:1440px;margin:auto;padding:8px 24px 28px;color:var(--muted);fon
 }
 
 
-/* v44 Install App button accent */
-#installAppBtn{
+
+/* v46 unified gradient system */
+:root{
+  --accent-start:#604de6;
+  --accent-end:#4ac0bb;
+  --accent-gradient:linear-gradient(135deg,var(--accent-start) 0%,var(--accent-end) 100%);
+  --accent-gradient-hover:linear-gradient(135deg,#503fd0 0%,#3aa9a5 100%);
+}
+
+/* Primary/action buttons share one source of truth */
+.primary,
+button.primary,
+#generate,
+#installAppBtn,
+#copyAllBtn{
   background:var(--accent-gradient) !important;
+  background-image:var(--accent-gradient) !important;
   border-color:transparent !important;
   color:#fff !important;
 }
-#installAppBtn:hover{
+
+.primary:hover,
+button.primary:hover,
+#generate:hover,
+#installAppBtn:hover,
+#copyAllBtn:hover{
   background:var(--accent-gradient-hover) !important;
+  background-image:var(--accent-gradient-hover) !important;
 }
-#installAppBtn:focus-visible{
+
+.primary:focus-visible,
+button.primary:focus-visible,
+#generate:focus-visible,
+#installAppBtn:focus-visible,
+#copyAllBtn:focus-visible{
   outline:3px solid rgba(96,77,230,.22) !important;
   outline-offset:2px;
 }
 
+/* App accents */
+.kicker,
+.badge{
+  color:var(--accent-start) !important;
+}
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:var(--accent-start) !important;
+  box-shadow:0 0 0 3px rgba(96,77,230,.12) !important;
+}
+.atmo-option{
+  accent-color:var(--accent-end) !important;
+}
 
-/* v45 permanent theme dropdown contrast fix */
+/* Theme-independent enforcement */
+html[data-theme="dark"] #generate,
+html[data-theme="dark"] #installAppBtn,
+html[data-theme="light"] #generate,
+html[data-theme="light"] #installAppBtn{
+  background:var(--accent-gradient) !important;
+  background-image:var(--accent-gradient) !important;
+  color:#fff !important;
+}
+
+
+/* v47 hard-lock theme dropdown option contrast */
+#themeSelect,
 .theme-select select{
-  background:var(--panel);
-  color:var(--text);
-  border:0;
-  outline:0;
+  color:var(--text) !important;
+  background:var(--panel) !important;
+  -webkit-text-fill-color:var(--text) !important;
 }
 
-/* Native dropdown popup options often render on a light system surface.
-   Keep option text dark in all app themes so it always remains readable. */
-.theme-select select option{
-  background:#ffffff !important;
+/* Force native option popup to readable light surface */
+#themeSelect option,
+.theme-select select option,
+html[data-theme="dark"] #themeSelect option,
+html[data-theme="dark"] .theme-select select option,
+html[data-theme="light"] #themeSelect option,
+html[data-theme="light"] .theme-select select option{
   color:#151821 !important;
+  background:#ffffff !important;
+  -webkit-text-fill-color:#151821 !important;
 }
 
-/* Selected closed control still follows the active app theme. */
-html[data-theme="dark"] .theme-select select{
-  background:var(--panel);
-  color:var(--text);
+/* Selected option / disabled option should remain readable too */
+#themeSelect option:checked,
+#themeSelect option:disabled,
+.theme-select select option:checked,
+.theme-select select option:disabled{
+  color:#151821 !important;
+  background:#ffffff !important;
+  -webkit-text-fill-color:#151821 !important;
 }
-html[data-theme="light"] .theme-select select{
-  background:var(--panel);
-  color:var(--text);
+
+
+/* v48 final native theme-dropdown contrast lock */
+select#themeSelect{
+  color:var(--text) !important;
+  background:var(--panel) !important;
+  -webkit-text-fill-color:var(--text) !important;
+  color-scheme:light dark;
+}
+select#themeSelect option,
+select#themeSelect option:checked,
+select#themeSelect option:disabled,
+html[data-theme="dark"] select#themeSelect option,
+html[data-theme="light"] select#themeSelect option{
+  color:#151821 !important;
+  background-color:#ffffff !important;
+  -webkit-text-fill-color:#151821 !important;
+  color-scheme:light !important;
 }
 
 </style>
@@ -227,7 +301,7 @@ html[data-theme="light"] .theme-select select{
   <div class="brand"><h1>CREATOR.CO</h1><p>Music Video Title Generator and Topic Cluster</p></div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
   <button class="secondary" id="installAppBtn" style="display:inline-block;padding:8px 12px">Install App</button>
-  <div class="theme-select"><span>◐</span><select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
+  <div class="theme-select"><span>◐</span><select id="themeSelect"><option  value="system" style="color:#151821;background:#ffffff;-webkit-text-fill-color:#151821">System</option><option  value="light" style="color:#151821;background:#ffffff;-webkit-text-fill-color:#151821">Light</option><option  value="dark" style="color:#151821;background:#ffffff;-webkit-text-fill-color:#151821">Dark</option></select></div>
 </div>
 </div></header>
 

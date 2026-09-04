@@ -240,3 +240,26 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Theme dropdown options now always use dark text on a white option surface.
 - Closed dropdown control still follows Light/Dark/System app theme.
 - Rules are isolated from accent-color changes so future visual updates won't reintroduce the bug.
+
+
+## v46 Unified Gradient System
+- Generate SEO Titles and Install App now use the exact same gradient source.
+- Gradient: `#604de6 → #4ac0bb`.
+- Enforced in Dark and Light themes.
+- Same rules apply across mobile, tablet, and desktop.
+- App accents reference the same unified start/end colors.
+
+
+## v47 Theme Dropdown Hard-Lock Fix
+- Theme selector now has a stable `#themeSelect` target.
+- All dropdown options are forced to dark text on white background.
+- Rules are explicitly scoped for Dark and Light modes.
+- Added `-webkit-text-fill-color` to prevent Chromium/WebKit theme overrides.
+- Checked/disabled option states are also forced readable.
+
+
+## v48 Final Theme Dropdown Contrast Fix
+- Theme selector receives a stable `id="themeSelect"`.
+- Each System / Light / Dark option also carries inline dark-text + white-background styling.
+- Added final scoped CSS with `color-scheme: light` for native popup options.
+- This is intentionally isolated from the app accent/theme palette so future visual changes cannot alter option readability.
