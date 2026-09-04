@@ -1104,6 +1104,8 @@ function buildMetaTagKeywords(mainKeyword,relatedKeywords,niche,useCase){
    const cleaned=(typeof stripRepeatedConcepts==="function") ? stripRepeatedConcepts(value) : value;
    const phrase=metaPhrase(cleaned);
    if(!phrase) return;
+   const wordCount=phrase.split(" ").filter(Boolean).length;
+   if(wordCount>4) return;
 
    // Require meaningful relation to Main Keyword, except the Main Keyword itself.
    const words=phrase.split(" ").filter(Boolean);
@@ -1116,7 +1118,7 @@ function buildMetaTagKeywords(mainKeyword,relatedKeywords,niche,useCase){
    });
  }
 
- // Main keyword must be present.
+ // Main Keyword is included only when it also respects the 4-word Meta Tag limit.
  add(main,100);
 
  // Related Keywords are the main source, but re-ranked independently.
@@ -1180,7 +1182,9 @@ function buildMetaTagKeywords(mainKeyword,relatedKeywords,niche,useCase){
  if(mainItem) result.push(mainItem.phrase);
  result.push(...others.map(x=>x.phrase));
 
- return result.slice(0,10);
+ return result
+   .filter(x=>metaPhrase(x).split(" ").filter(Boolean).length<=4)
+   .slice(0,10);
 }
 
 function render(v){
@@ -1199,7 +1203,7 @@ function render(v){
  <div class="card result-card"><div class="kicker">Atmosphere / Vibes</div><h2 class="section-title">Cinematic hooks</h2><div class="atmo-list">${atHtml}</div></div>
  <div class="card result-card recommended"><div class="row-between"><div><span class="badge">Recommended</span><div class="kicker" style="margin-top:12px">Best Title</div></div><button class="copy" onclick='copyText(${JSON.stringify(best.title)},this)'>Copy Title</button></div><div class="title-text">${best.title}</div><div class="metrics"><span class="metric">SEO Score: ${best.score}/100</span><span class="metric">${best.len} characters</span></div></div>
  <div class="card result-card"><div class="kicker">Alternative Titles</div><h2 class="section-title">Additional variations</h2><div class="title-list">${titleHtml}</div></div>
- <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">10 prioritized YouTube keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div><small style="display:block;color:var(--muted);margin-top:8px">Prioritizes concise Meta Tag Keywords (ideally ≤4 words), Main Keyword relevance, YouTube search-intent heuristics, and viral potential. No fabricated search-volume data.</small></div>
+ <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">10 prioritized YouTube keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div><small style="display:block;color:var(--muted);margin-top:8px">Meta Tag Keywords are limited to a maximum of 4 words and ranked by Main Keyword relevance, YouTube search-intent heuristics, and viral potential. No fabricated search-volume data.</small></div>
  <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Prioritizes Main Keyword relevance, familiar social/YouTube phrasing, and viral-potential heuristics. No fabricated search-volume data.</small></div>
  <div class="result-actions">
    <button class="primary" id="copyAllBtn">Bulk Copy</button>

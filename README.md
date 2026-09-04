@@ -368,3 +368,9 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Keywords with 1–4 words are prioritized.
 - Keywords longer than 4 words remain eligible only when strongly relevant.
 - Main Keyword is still preserved even when longer than 4 words.
+
+## v66 Meta Tag Hard 4-word Limit
+- Meta Tag Keywords now have a hard maximum of 4 words.
+- Candidates longer than 4 words are rejected before ranking.
+- A final safety filter enforces the same limit before output.
+- Main Keyword is included only if it is 4 words or fewer.
