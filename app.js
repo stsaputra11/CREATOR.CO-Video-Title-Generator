@@ -879,9 +879,313 @@ function fallbackCopy(t,done){
  try{document.execCommand("copy");done();}catch(e){alert("Copy failed. Please select and copy manually.");}
  document.body.removeChild(ta);
 }
+
+const SOCIAL_HASHTAG_SIGNALS=[
+ "lofi","lofihiphop","lofibeats","chill","chillbeats","relaxingmusic","sleepmusic",
+ "studymusic","focusmusic","workmusic","ambientmusic","rain","rainsounds","rainymood",
+ "piano","pianomusic","healingmusic","calmingmusic","lullaby","babysleep","musicbox",
+ "jazz","bossanova","acoustic","guitar","meditationmusic","flutemusic","deephouse",
+ "melodictechno","nightvibes","cozyvibes","relaxing","sleep","study","focus","meditation"
+];
+
+function hashtagPhrase(value){
+ return String(value||"")
+   .normalize("NFKC")
+   .toLowerCase()
+   .replace(/&/g," and ")
+   .replace(/[^\p{L}\p{N}\s]/gu," ")
+   .replace(/\s+/g," ")
+   .trim();
+}
+
+function hashtagKey(value){
+ return hashtagPhrase(value).replace(/\s+/g,"");
+}
+
+function hashtagSocialScore(value){
+ const phrase=hashtagPhrase(value);
+ const key=hashtagKey(value);
+ if(!phrase || !key) return -999;
+
+ let score=0;
+ const words=phrase.split(" ").filter(Boolean);
+
+ // Relevance-friendly shape: concise hashtags tend to be easier to read/use.
+ if(words.length===1) score+=18;
+ else if(words.length===2) score+=26;
+ else if(words.length===3) score+=18;
+ else if(words.length===4) score+=8;
+ else score-=10;
+
+ // Familiar social / YouTube music phrasing.
+ for(const signal of SOCIAL_HASHTAG_SIGNALS){
+   if(key===signal) score+=28;
+   else if(key.includes(signal) || signal.includes(key)) score+=10;
+ }
+
+ // Strong music/content intent.
+ if(/\b(music|lofi|beats|piano|jazz|guitar|lullaby|flute|house|techno|rain|sleep|study|focus|relax|meditation|ambient|vibes)\b/.test(phrase)) score+=12;
+
+ // Avoid overly generic or spam-like tags.
+ if(/^(music|video|youtube|viral|fyp|trending)$/i.test(phrase)) score-=30;
+
+ // Readability / memorability heuristic.
+ if(key.length>=5 && key.length<=22) score+=12;
+ else if(key.length>30) score-=14;
+
+ return score;
+}
+
+function buildDescriptionHashtags(mainKeyword,relatedKeywords){
+ const main=hashtagPhrase(mainKeyword);
+ const mainTokens=new Set(main.split(" ").filter(Boolean));
+ const candidates=[];
+
+ function addCandidate(value,bonus=0){
+   const phrase=hashtagPhrase(value);
+   if(!phrase) return;
+   const key=hashtagKey(phrase);
+   if(!key) return;
+
+   const tokens=phrase.split(" ").filter(Boolean);
+   const overlap=tokens.filter(t=>mainTokens.has(t)).length;
+   const relevance=mainTokens.size ? overlap/mainTokens.size : 0;
+
+   // Must stay meaningfully related to Main Keyword.
+   if(relevance===0 && phrase!==main) return;
+
+   const score=
+     hashtagSocialScore(phrase) +
+     Math.round(relevance*45) +
+     bonus;
+
+   candidates.push({phrase,key,score});
+ }
+
+ // Main Keyword always gets strongest relevance priority.
+ addCandidate(main,50);
+
+ // Related Keywords are primary expansion source.
+ (relatedKeywords||[]).forEach((kw,i)=>{
+   addCandidate(kw,Math.max(0,18-i*2));
+ });
+
+ // Create concise social-style combinations from Main Keyword tokens.
+ const mainWords=main.split(" ").filter(Boolean);
+ if(mainWords.length>=2){
+   for(let i=0;i<mainWords.length;i++){
+     for(let j=i+1;j<mainWords.length;j++){
+       addCandidate(`${mainWords[i]} ${mainWords[j]}`,14);
+     }
+   }
+ }
+
+ // Single strong topic tokens are allowed only when clearly meaningful.
+ for(const w of mainWords){
+   if(w.length>=4 && !/^(music|video|audio|sound)$/i.test(w)){
+     addCandidate(w,6);
+   }
+ }
+
+ // Rank + dedupe.
+ const bestByKey=new Map();
+ for(const c of candidates){
+   const prev=bestByKey.get(c.key);
+   if(!prev || c.score>prev.score) bestByKey.set(c.key,c);
+ }
+
+ const ranked=[...bestByKey.values()]
+   .sort((a,b)=>b.score-a.score)
+   .slice(0,5);
+
+ return ranked.map(x=>{
+   const pascal=x.phrase.split(" ").filter(Boolean)
+     .map(w=>w.charAt(0).toUpperCase()+w.slice(1))
+     .join("");
+   return "#"+pascal;
+ });
+}
+
+
+const YOUTUBE_META_SEARCH_SIGNALS=[
+ "lofi","lofi hiphop","lofi beats","chill beats","study music","focus music",
+ "work music","relaxing music","sleep music","deep sleep music","rain sounds",
+ "rain ambience","piano music","healing piano","calming piano","lullaby",
+ "baby sleep music","music box","jazz","bossa nova","acoustic guitar",
+ "meditation music","tibetan flute","deep house","melodic techno",
+ "background music","ambient music","night vibes","cozy ambience"
+];
+
+function metaPhrase(value){
+ return String(value||"")
+   .normalize("NFKC")
+   .toLowerCase()
+   .replace(/&/g," and ")
+   .replace(/[^\p{L}\p{N}\s]/gu," ")
+   .replace(/\s+/g," ")
+   .trim();
+}
+
+
+
+
+function metaKeywordScore(value,mainKeyword,niche,useCase){
+ const phrase=metaPhrase(value);
+ const main=metaPhrase(mainKeyword);
+ if(!phrase) return -999;
+
+ const words=phrase.split(" ").filter(Boolean);
+ const mainWords=new Set(main.split(" ").filter(Boolean));
+ const phraseWords=phrase.split(" ").filter(Boolean);
+
+ let score=0;
+
+ // Strong priority for concise meta tags: ideally no more than 4 words.
+ if(words.length===1) score+=28;
+ else if(words.length===2) score+=36;
+ else if(words.length===3) score+=40;
+ else if(words.length===4) score+=38;
+ else if(words.length===5) score+=6;
+ else score-=28;
+
+ // Relevance to Main Keyword is the strongest factor.
+ const overlap=phraseWords.filter(w=>mainWords.has(w)).length;
+ const relevance=mainWords.size ? overlap/mainWords.size : 0;
+ score += Math.round(relevance*55);
+
+ if(phrase===main) score+=50;
+
+ // YouTube-search-intent heuristic: familiar phrases people commonly type.
+ for(const signal of YOUTUBE_META_SEARCH_SIGNALS){
+   const s=metaPhrase(signal);
+   if(phrase===s) score+=30;
+   else if(phrase.includes(s)) score+=18;
+   else if(s.includes(phrase) && phrase.length>=5) score+=8;
+ }
+
+ // Use-case intent.
+ const use=String(useCase||"").toLowerCase();
+ if(use && phrase.includes(use)) score+=16;
+
+ // Niche intent: reward any selected-niche variant found in the phrase.
+ try{
+   const fakeV={niche:niche};
+   const nicheVariants=selectedNicheDisplayVariants(fakeV)||[];
+   for(const variant of nicheVariants){
+     const nv=metaPhrase(variant);
+     if(nv && phrase.includes(nv)) score+=14;
+   }
+ }catch(e){}
+
+ // Prefer concise, searchable phrases over long stuffing.
+ if(words.length===2) score+=18;
+ else if(words.length===3) score+=24;
+ else if(words.length===4) score+=16;
+ else if(words.length===5) score+=8;
+ else if(words.length>6) score-=18;
+
+ // Viral-potential heuristic: readable, memorable, and intent-rich.
+ if(phrase.length>=8 && phrase.length<=38) score+=12;
+ if(/\b(music|lofi|beats|rain|sleep|study|focus|relax|piano|jazz|guitar|lullaby|flute|house|techno|ambience|vibes)\b/.test(phrase)) score+=10;
+
+ // Avoid low-value generic/spam terms.
+ if(/^(music|video|youtube|viral|fyp|trending|song|audio)$/i.test(phrase)) score-=45;
+ if(/\b(viral|fyp|trending)\b/.test(phrase) && relevance<0.5) score-=25;
+
+ return score;
+}
+
+function buildMetaTagKeywords(mainKeyword,relatedKeywords,niche,useCase){
+ const main=metaPhrase(mainKeyword);
+ const mainWords=main.split(" ").filter(Boolean);
+ const candidates=[];
+
+ function add(value,bonus=0){
+   const cleaned=(typeof stripRepeatedConcepts==="function") ? stripRepeatedConcepts(value) : value;
+   const phrase=metaPhrase(cleaned);
+   if(!phrase) return;
+
+   // Require meaningful relation to Main Keyword, except the Main Keyword itself.
+   const words=phrase.split(" ").filter(Boolean);
+   const overlap=words.filter(w=>mainWords.includes(w)).length;
+   if(phrase!==main && overlap===0) return;
+
+   candidates.push({
+     phrase,
+     score:metaKeywordScore(phrase,mainKeyword,niche,useCase)+bonus
+   });
+ }
+
+ // Main keyword must be present.
+ add(main,100);
+
+ // Related Keywords are the main source, but re-ranked independently.
+ (relatedKeywords||[]).forEach((kw,i)=>{
+   add(kw,Math.max(0,28-i*2));
+ });
+
+ // Add independent YouTube-search-style variants from Main Keyword.
+ if(mainWords.length>=2){
+   for(let i=0;i<mainWords.length;i++){
+     for(let j=i+1;j<mainWords.length;j++){
+       add(`${mainWords[i]} ${mainWords[j]}`,10);
+     }
+   }
+ }
+
+ // Add use-case expansion independently from hashtag logic.
+ if(useCase){
+   const useMap={
+     Study:"study music",
+     Work:"work music",
+     Relax:"relaxing music",
+     Focus:"focus music",
+     Sleep:"sleep music"
+   };
+   const suffix=useMap[String(useCase)] || String(useCase).toLowerCase();
+   add(`${main} ${suffix}`,18);
+ }
+
+ // Add niche variants independently from hashtag logic.
+ try{
+   const fakeV={niche:niche};
+   const nicheVariants=selectedNicheDisplayVariants(fakeV)||[];
+   nicheVariants.slice(0,3).forEach((variant,i)=>{
+     add(variant,14-i*2);
+   });
+ }catch(e){}
+
+ // Dedupe by normalized phrase.
+ const best=new Map();
+ for(const c of candidates){
+   const key=metaPhrase(c.phrase);
+   const prev=best.get(key);
+   if(!prev || c.score>prev.score) best.set(key,c);
+ }
+
+ // Keep Main Keyword first, then rank the remaining terms.
+ const mainItem=best.get(main);
+ const others=[...best.values()]
+   .filter(x=>x.phrase!==main)
+   .sort((a,b)=>{
+     const aWords=metaPhrase(a.phrase).split(" ").filter(Boolean).length;
+     const bWords=metaPhrase(b.phrase).split(" ").filter(Boolean).length;
+     const aShort=aWords<=4 ? 1 : 0;
+     const bShort=bWords<=4 ? 1 : 0;
+     if(aShort!==bShort) return bShort-aShort;
+     return b.score-a.score;
+   });
+
+ const result=[];
+ if(mainItem) result.push(mainItem.phrase);
+ result.push(...others.map(x=>x.phrase));
+
+ return result.slice(0,10);
+}
+
 function render(v){
- const meta=[v.main,...state.keywords].join(", ");
- const hashtags=[v.main,...state.keywords.slice(0,4)].map(hashtag).join(" ");
+ const meta=buildMetaTagKeywords(v.main,state.keywords,v.niche,v.use).join(", ");
+ const hashtags=buildDescriptionHashtags(v.main,state.keywords).join(" ");
  const best=state.titles[0];
  const related=[v.main,...state.keywords].join(" ").toLowerCase();
  const kwHtml=state.keywords.map((k,i)=>`<div class="keyword"><b>${i+1}. ${k}</b><div class="potential ${i<4?'high':''}">SEO Potential: ${i<4?'High':i<7?'Medium':'Low'}</div></div>`).join("");
@@ -895,8 +1199,8 @@ function render(v){
  <div class="card result-card"><div class="kicker">Atmosphere / Vibes</div><h2 class="section-title">Cinematic hooks</h2><div class="atmo-list">${atHtml}</div></div>
  <div class="card result-card recommended"><div class="row-between"><div><span class="badge">Recommended</span><div class="kicker" style="margin-top:12px">Best Title</div></div><button class="copy" onclick='copyText(${JSON.stringify(best.title)},this)'>Copy Title</button></div><div class="title-text">${best.title}</div><div class="metrics"><span class="metric">SEO Score: ${best.score}/100</span><span class="metric">${best.len} characters</span></div></div>
  <div class="card result-card"><div class="kicker">Alternative Titles</div><h2 class="section-title">Additional variations</h2><div class="title-list">${titleHtml}</div></div>
- <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">Main + 9 Related Keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div></div>
- <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Uses SEO-potential ranking. No fabricated monthly search-volume data.</small></div>
+ <div class="card result-card"><div class="row-between"><div><div class="kicker">Meta Tag Keywords</div><h2 class="section-title">10 prioritized YouTube keywords</h2></div><button class="copy" onclick='copyText(${JSON.stringify(meta)},this)'>Copy Meta Tags</button></div><div class="codebox">${meta}</div><small style="display:block;color:var(--muted);margin-top:8px">Prioritizes concise Meta Tag Keywords (ideally ≤4 words), Main Keyword relevance, YouTube search-intent heuristics, and viral potential. No fabricated search-volume data.</small></div>
+ <div class="card result-card"><div class="row-between"><div><div class="kicker">Description Hashtags</div><h2 class="section-title">5 priority hashtags</h2></div><button class="copy" onclick='copyText(${JSON.stringify(hashtags)},this)'>Copy Hashtags</button></div><div class="codebox">${hashtags}</div><small style="display:block;color:var(--muted);margin-top:8px">Prioritizes Main Keyword relevance, familiar social/YouTube phrasing, and viral-potential heuristics. No fabricated search-volume data.</small></div>
  <div class="result-actions">
    <button class="primary" id="copyAllBtn">Bulk Copy</button>
    <button class="secondary" id="exportResultsBtn">Export (.xlsx)</button>

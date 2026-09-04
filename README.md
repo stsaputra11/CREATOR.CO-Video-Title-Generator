@@ -341,3 +341,30 @@ Note: after a final custom domain is chosen, replacing relative canonical/OG URL
 - Conflicting activity intent spread across different fields is blocked.
 - Example blocked: Cluster `sleep rain` + Main Keyword `focus music`.
 - Existing sticky-header-safe warning auto-scroll remains active.
+
+## v62 Description Hashtags Ranking
+- Description Hashtags are now ranked by Main Keyword relevance.
+- Added social/YouTube familiarity heuristics for music-related hashtag phrasing.
+- Added viral-potential heuristics based on concision, readability, familiarity, and intent.
+- Generic spam tags such as #viral / #fyp / #trending are penalized unless truly relevant.
+- Output remains capped at 5 hashtags.
+- No fabricated search-volume data is used.
+
+## v63 Meta Tag Keywords Ranking
+- Meta Tag Keywords now use a dedicated ranking system independent from Description Hashtags.
+- Ranking factors: Main Keyword relevance, YouTube search-intent heuristic, selected niche/use-case relevance, concision, and viral-potential heuristic.
+- Main Keyword remains included.
+- Output capped at 10 prioritized keywords.
+- No fabricated search-volume data is used.
+
+## v64 Meta Tag Syllable Priority
+- Meta Tag Keywords now prioritize candidates with an estimated maximum of 4 syllables.
+- <=4 syllable phrases are ranked ahead of longer candidates.
+- Longer keywords remain eligible only when their relevance/search-intent score is strong.
+- Main Keyword is still preserved even when longer than 4 syllables.
+
+## v65 Meta Tag Word-count Priority
+- Corrected Meta Tag Keywords priority from syllables to words.
+- Keywords with 1–4 words are prioritized.
+- Keywords longer than 4 words remain eligible only when strongly relevant.
+- Main Keyword is still preserved even when longer than 4 words.
